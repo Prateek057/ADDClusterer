@@ -1,0 +1,24 @@
+<div class="container">
+    <div class="row">
+        <div class="row">
+            <h1>Classify documents</h1>
+            <b>Pipeline: {{vm.pipeline.name}}</b>
+            <hr />
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <textarea class="form-control" rows="5" id="textToClassify" ng-model="vm.textToClassify"></textarea>
+            </div>
+            <div ng-if='vm.textToClassify !== ""'>
+                <button type="button" class="btn btn-primary" ng-click="vm.classifyDocuments()">Train documents</button>
+            </div>
+        </div>
+        <hr />
+        <div ng-if="vm.isTraining === true" class="jumbotron">
+            Please wait! The system is predicting the label!
+        </div>
+        <div ng-if="vm.showResults === true" class="jumbotron">
+            <b>Predicted label for the test data: {{vm.result}}</b>
+        </div>
+    </div>
+</div>
