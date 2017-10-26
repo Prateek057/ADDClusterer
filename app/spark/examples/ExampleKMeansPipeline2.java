@@ -8,18 +8,16 @@ import org.apache.spark.ml.feature.HashingTF;
 import org.apache.spark.ml.feature.StopWordsRemover;
 import org.apache.spark.ml.feature.Tokenizer;
 import org.apache.spark.sql.*;
-import play.inject.ApplicationLifecycle;
 import spark.clustering.ISparkClusterPipeline;
 import spark.SparkSessionComponent;
 
-import javax.inject.Inject;
 import java.io.File;
 
 public class ExampleKMeansPipeline2 implements ISparkClusterPipeline {
 
     private SparkSessionComponent sparkSessionComponent;
 
-    public void trainPipeline() {
+    public Dataset<Row> trainPipeline() {
 
         System.out.println("\n...........................Example PipeLine 2: Tokenizer, Remove StopWords, Hashing TF, KMeans...........................");
 
@@ -77,5 +75,6 @@ public class ExampleKMeansPipeline2 implements ISparkClusterPipeline {
 
         System.out.println("\n...........................Example Pipeline 2: The End...........................");
 
+        return results;
     }
 }

@@ -76,7 +76,7 @@ public class BaseClusterPipeline implements ISparkClusterPipeline {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return pipelineModel;
+        return pipelineModel.defaultCopy(pipelineModel.extractParamMap());
     }
 
 }

@@ -14,8 +14,7 @@ public class CSVDataLoader implements ISparkDataLoader {
     }
 
     public Dataset<Row> loadData(String path) {
-        System.out.print(sparkSessionComponent);
-        SparkSession spark = sparkSessionComponent.getSparkSession(); //sparkSessionComponent is an inject singleton component
+        SparkSession spark = sparkSessionComponent.getSparkSession();
         File csvFile = new File(path);
         String absolutePath = csvFile.getAbsolutePath();
         return spark.read().csv(absolutePath);
