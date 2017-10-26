@@ -1,4 +1,4 @@
-package spark;
+package spark.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;

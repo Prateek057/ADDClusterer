@@ -1,4 +1,4 @@
-package spark;
+package spark.examples;
 
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
@@ -8,17 +8,22 @@ import org.apache.spark.ml.feature.HashingTF;
 import org.apache.spark.ml.feature.StopWordsRemover;
 import org.apache.spark.ml.feature.Tokenizer;
 import org.apache.spark.sql.*;
+import play.inject.ApplicationLifecycle;
+import spark.clustering.ISparkClusterPipeline;
+import spark.SparkSessionComponent;
 
 import javax.inject.Inject;
 import java.io.File;
 
-public class ExampleKMeansPipeline2 implements  ISparkClusterPipeline{
-    private @Inject SparkSessionComponent sparkSessionComponent;
+public class ExampleKMeansPipeline2 implements ISparkClusterPipeline {
+
+    private SparkSessionComponent sparkSessionComponent;
 
     public void trainPipeline() {
 
         System.out.println("\n...........................Example PipeLine 2: Tokenizer, Remove StopWords, Hashing TF, KMeans...........................");
 
+        sparkSessionComponent = SparkSessionComponent.getSparkSessionComponent();
         SparkSession spark = sparkSessionComponent.getSparkSession();
         System.out.print("\n");
 
@@ -68,7 +73,7 @@ public class ExampleKMeansPipeline2 implements  ISparkClusterPipeline{
         results.show();
 
         System.out.println("\n......Saving Results...........................");
-        results.write().format("json").save("../DocClassification/myresources/results/example-pipeline-2");
+        results.write().format("json").mode("overwrite").save("../DocClassification/myresources/results/example-pipeline-2");
 
         System.out.println("\n...........................Example Pipeline 2: The End...........................");
 

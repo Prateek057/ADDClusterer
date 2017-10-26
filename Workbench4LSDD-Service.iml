@@ -11,5 +11,13 @@
     <orderEntry type="library" name="SBT: com.typesafe.play:play_2.11:2.5.9:jar" level="project" />
     <orderEntry type="library" name="SBT: javax.inject:javax.inject:1:jar" level="project" />
     <orderEntry type="library" name="SBT: org.webjars:webjars-play_2.11:2.5.0:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.mongodb:mongo-java-driver:3.2.2:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.mongodb.morphia:morphia:1.2.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.apache.spark:spark-sql_2.11:2.2.0:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.apache.spark:spark-mllib_2.11:2.2.0:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.deeplearning4j:deeplearning4j-nlp:0.9.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.nd4j:nd4j-api:0.9.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.deeplearning4j:deeplearning4j-nn:0.9.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.deeplearning4j:nearestneighbor-core:0.9.1:jar" level="project" />
   </component>
 </module>

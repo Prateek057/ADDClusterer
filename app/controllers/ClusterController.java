@@ -1,20 +1,20 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import play.mvc.Controller;
 import play.mvc.Result;
-import spark.BaseClusterPipeline;
-import spark.CSVDataLoader;
-import spark.ExampleKMeansPipeline1;
-import spark.ExampleKMeansPipeline2;
-import views.html.index;
+import spark.clustering.BaseClusterPipeline;
+import spark.dataloader.CSVDataLoader;
+import spark.examples.ExampleKMeansPipeline1;
+import spark.examples.ExampleKMeansPipeline2;
 
 import javax.inject.Inject;
 
 import static dl4j.ExampleDL4JKmeans.clusterDocuments;
-import static spark.SparkDatasetUtil.datasetToJson;
+import static spark.utils.SparkDatasetUtil.datasetToJson;
 
 public class ClusterController extends Controller {
     @Inject
@@ -49,8 +49,9 @@ public class ClusterController extends Controller {
     public Result runBasePipeline(){
         CSVDataLoader csvDataLoader = new CSVDataLoader();
         BaseClusterPipeline baseClusterPipeline = new BaseClusterPipeline(csvDataLoader);
-        baseClusterPipeline.trainPipeline("../myresources/datasets/tasksNoHeader.csv", new String[] { "_c0", "_c1" });
-        return ok();
+        PipelineModel pipelineModel = baseClusterPipeline.trainPipeline("myresources/datasets/tasksNoHeader.csv");
+        //pipelineModel.write()
+        return ok(pipelineModel.uid());
     }
 
 }

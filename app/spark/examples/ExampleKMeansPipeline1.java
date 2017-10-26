@@ -1,4 +1,4 @@
-package spark;
+package spark.examples;
 
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
@@ -7,12 +7,15 @@ import org.apache.spark.ml.feature.Tokenizer;
 import org.apache.spark.ml.feature.*;
 import org.apache.spark.ml.clustering.KMeans;
 import org.apache.spark.sql.*;
+import play.inject.ApplicationLifecycle;
+import spark.clustering.ISparkClusterPipeline;
+import spark.SparkSessionComponent;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
 import java.util.List;
 
-import static spark.SparkDatasetUtil.datasetToJson;
 import static util.StaticFunctions.deserializeToJSON;
 
 /*
@@ -23,15 +26,17 @@ import static util.StaticFunctions.deserializeToJSON;
 *
 * */
 @Singleton
-public class ExampleKMeansPipeline1 implements ISparkClusterPipeline{
+public class ExampleKMeansPipeline1 implements ISparkClusterPipeline {
 
-    private @Inject SparkSessionComponent sparkSessionComponent;
+    private SparkSessionComponent sparkSessionComponent;
     private List<Row> ArrayResults;
+
 
     public Dataset<Row> trainPipeline() {
 
         System.out.println("\n...........................Example PipeLine 1: Tokenizer, Remove StopWords, Word2Vec, KMeans...........................");
 
+        sparkSessionComponent = SparkSessionComponent.getSparkSessionComponent();
 
         SparkSession spark = sparkSessionComponent.getSparkSession();
         System.out.print("\n");
@@ -90,11 +95,13 @@ public class ExampleKMeansPipeline1 implements ISparkClusterPipeline{
         results.show();
 
         System.out.println("\n......Saving Results...........................");
-        //results.write().format("json").save("../DocClassification/myresources/results/example-pipeline-1");
+        results.write().mode("overwrite").format("json").save("../DocClassification/myresources/results/example-pipeline-1");
 
         System.out.println("\n...........................Example PipeLine 1: The End...........................");
 
         return results;
 
     }
+
+
 }

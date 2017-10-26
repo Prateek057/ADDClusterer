@@ -1,4 +1,4 @@
-package spark;
+package spark.clustering;
 
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
@@ -9,18 +9,17 @@ import org.apache.spark.ml.feature.Tokenizer;
 import org.apache.spark.ml.feature.Word2Vec;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import play.inject.ApplicationLifecycle;
+import spark.*;
+import spark.dataloader.CSVDataLoader;
+import spark.dataloader.ISparkDataLoader;
+import spark.preprocessing.SparkCommonPreprocessor;
 
 import javax.inject.Inject;
 
 import java.io.IOException;
 
-import static spark.SparkStringColumnUtil.concatStringTypeColumns;
-import static spark.SparkStringColumnUtil.removePunctuation;
-import static spark.SparkStringColumnUtil.toLowerCase;
-
 public class BaseClusterPipeline implements ISparkClusterPipeline {
-    private @Inject
-    SparkSessionComponent sparkSessionComponent;
 
     private ISparkDataLoader dataLoader;
     private PipelineStage[] basePipelineStages;
@@ -32,10 +31,9 @@ public class BaseClusterPipeline implements ISparkClusterPipeline {
 
 
     public BaseClusterPipeline(ISparkDataLoader Dl){
-        if(Dl.getClass() == CSVDataLoader.class){
+        if(Dl.getClass() == CSVDataLoader.class) {
             dataLoader = new CSVDataLoader();
         }
-        //TODO: Initialize PreprocessStaging Component
         createPipelineStages();
     }
 
@@ -65,15 +63,20 @@ public class BaseClusterPipeline implements ISparkClusterPipeline {
         basePipeline =  new Pipeline().setStages(basePipelineStages);
     }
 
-    public void trainPipeline(String path, String[] listOfStringAttributeNames){
+
+    public PipelineModel trainPipeline(String path){
+
         Dataset<Row> dataSet = dataLoader.loadData(path);
-        dataSet = SparkCommonPreprocessor.commonPreprocess(dataSet, listOfStringAttributeNames);
+        String[] columns = dataSet.columns();
+        dataSet = SparkCommonPreprocessor.commonPreprocess(dataSet, columns);
+
         PipelineModel pipelineModel = basePipeline.fit(dataSet);
         try {
-            pipelineModel.save("../myresources/models/base-kmeans-model");
+           pipelineModel.write().overwrite().save("myresources/models/base-kmeans-model");
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return pipelineModel;
     }
 
 }

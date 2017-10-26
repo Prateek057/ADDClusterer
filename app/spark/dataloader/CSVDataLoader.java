@@ -1,25 +1,23 @@
-package spark;
+package spark.dataloader;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import play.inject.ApplicationLifecycle;
+import spark.SparkSessionComponent;
 
-import javax.inject.Inject;
 import java.io.File;
 
 public class CSVDataLoader implements ISparkDataLoader {
-    private @Inject SparkSessionComponent sparkSessionComponent;
-
+    private SparkSessionComponent sparkSessionComponent;
     public CSVDataLoader(){
+        sparkSessionComponent = SparkSessionComponent.getSparkSessionComponent();
     }
-    @Override
+
     public Dataset<Row> loadData(String path) {
-        SparkSession spark = sparkSessionComponent.getSparkSession();
+        System.out.print(sparkSessionComponent);
+        SparkSession spark = sparkSessionComponent.getSparkSession(); //sparkSessionComponent is an inject singleton component
         File csvFile = new File(path);
         String absolutePath = csvFile.getAbsolutePath();
         return spark.read().csv(absolutePath);
     }
-
-
 }

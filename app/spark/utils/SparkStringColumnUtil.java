@@ -1,4 +1,4 @@
-package spark;
+package spark.utils;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -13,9 +13,10 @@ public class SparkStringColumnUtil {
     public static Dataset<Row> concatStringTypeColumns(String[] columns, Dataset<Row> inputDataset) {
         int noofcolumns = columns.length;
         Dataset<Row> newDataset = inputDataset;
-        newDataset.withColumn("document", newDataset.col(columns[0]));
-        for (int i = 1; i <= noofcolumns; i++) {
-            newDataset = newDataset.withColumn("document", functions.concat_ws(" ", inputDataset.col("documents"), inputDataset.col(columns[i])));
+        newDataset = newDataset.withColumn("document", newDataset.col(columns[0]));
+        newDataset.show();
+        for (int i = 1; i < noofcolumns; i++) {
+            newDataset = newDataset.withColumn("document", functions.concat_ws(" ", newDataset.col("document"), newDataset.col(columns[i])));
         }
         return newDataset;
     }
