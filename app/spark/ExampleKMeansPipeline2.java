@@ -23,7 +23,7 @@ public class ExampleKMeansPipeline2 implements  ISparkClusterPipeline{
         System.out.print("\n");
 
         // Load and parse data
-        String path = new File("D:\\TUM\\Master Thesis\\DataSets\\tasksNoHeader.csv").getAbsolutePath();
+        String path = new File("../DocClassification/myresources/datasets/tasksNoHeader.csv").getAbsolutePath();
         Dataset<Row> listData = spark.read().csv(path);
         listData = listData.withColumn("document", functions.concat_ws(" ", listData.col("_c0"), listData.col("_c1")));
         listData.show();

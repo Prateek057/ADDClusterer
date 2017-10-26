@@ -4,6 +4,7 @@ import org.deeplearning4j.clustering.cluster.Cluster;
 import org.deeplearning4j.clustering.cluster.ClusterSet;
 import org.deeplearning4j.clustering.cluster.Point;
 import org.deeplearning4j.clustering.kmeans.KMeansClustering;
+import org.deeplearning4j.eval.curves.PrecisionRecallCurve;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.text.documentiterator.LabelsSource;
 import org.deeplearning4j.text.sentenceiterator.LineSentenceIterator;
@@ -21,7 +22,7 @@ import java.util.Map;
 public class ExampleDL4JKmeans {
 
     public static void clusterDocuments(){
-        File inputFile = new File("D:\\TUM\\Master Thesis\\DataSets\\tasksNoHeader.csv");
+        File inputFile = new File("../DocClassification/myresources/datasets/tasksNoHeader.csv");
         SentenceIterator sentenceIterator = new LineSentenceIterator(inputFile);
 
         LabelsSource source = new LabelsSource("DOC_");
@@ -64,7 +65,8 @@ public class ExampleDL4JKmeans {
         for(Cluster c: clsterLst) {
             Point center = c.getCenter();
             System.out.println(center.getId());
-            System.out.println();
+            int clusterPoints = c.getPoints().size();
+            System.out.println(clusterPoints);
         }
 
     }

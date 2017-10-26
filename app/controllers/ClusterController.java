@@ -1,9 +1,12 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import play.mvc.BodyParser;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import play.mvc.Controller;
 import play.mvc.Result;
+import spark.BaseClusterPipeline;
+import spark.CSVDataLoader;
 import spark.ExampleKMeansPipeline1;
 import spark.ExampleKMeansPipeline2;
 import views.html.index;
@@ -11,6 +14,7 @@ import views.html.index;
 import javax.inject.Inject;
 
 import static dl4j.ExampleDL4JKmeans.clusterDocuments;
+import static spark.SparkDatasetUtil.datasetToJson;
 
 public class ClusterController extends Controller {
     @Inject
@@ -22,15 +26,12 @@ public class ClusterController extends Controller {
     @Inject
     private ExampleKMeansPipeline2 exampleKMeansPipeline2;
 
-    public Result index(){
-
-        return ok(index.render(webJarAssets));
-    }
-
     //Run Spark KMean Example Pipeline1
     public Result runPipelineExample1(){
-        Object[] results = exampleKMeansPipeline1.trainPipeline();
-        return ok();
+        Dataset<Row> results = exampleKMeansPipeline1.trainPipeline();
+        JsonNode jsonResults = datasetToJson(results);
+        //datasetToJson(results);
+        return ok(jsonResults);
     }
 
     //Run Spark KMean Example Pipeline2
@@ -42,6 +43,13 @@ public class ClusterController extends Controller {
     //Run DL4J Pipeline1
     public Result runPipelineExample3(){
         clusterDocuments();
+        return ok();
+    }
+
+    public Result runBasePipeline(){
+        CSVDataLoader csvDataLoader = new CSVDataLoader();
+        BaseClusterPipeline baseClusterPipeline = new BaseClusterPipeline(csvDataLoader);
+        baseClusterPipeline.trainPipeline("../myresources/datasets/tasksNoHeader.csv", new String[] { "_c0", "_c1" });
         return ok();
     }
 

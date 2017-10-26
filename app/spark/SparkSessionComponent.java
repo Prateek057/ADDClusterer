@@ -6,7 +6,9 @@ import play.inject.ApplicationLifecycle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 @Singleton
 public class SparkSessionComponent {

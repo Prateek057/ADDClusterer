@@ -1,4 +1,4 @@
-name := """DocClassification"""
+name := """Workbench4LSDD-Service"""
 
 version := "1.0-SNAPSHOT"
 
