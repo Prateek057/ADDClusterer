@@ -8,6 +8,7 @@ import org.apache.spark.ml.feature.*;
 import org.apache.spark.ml.clustering.KMeans;
 import org.apache.spark.sql.*;
 import play.inject.ApplicationLifecycle;
+import scala.Tuple2;
 import spark.clustering.ISparkClusterPipeline;
 import spark.SparkSessionComponent;
 
@@ -26,7 +27,7 @@ import static util.StaticFunctions.deserializeToJSON;
 *
 * */
 @Singleton
-public class ExampleKMeansPipeline1 implements ISparkClusterPipeline {
+public class ExampleKMeansPipeline1 implements ISparkClusterPipeline{
 
     private SparkSessionComponent sparkSessionComponent;
     private List<Row> ArrayResults;
@@ -54,7 +55,7 @@ public class ExampleKMeansPipeline1 implements ISparkClusterPipeline {
 
         //Split into training & testing datasets
         double[] weights = {0.5, 0.5};
-        Dataset<Row>[] splitDataSet =  inputData.randomSplit(weights);
+        Dataset<Row>[] splitDataSet = inputData.randomSplit(weights);
         Dataset<Row> trainingData = splitDataSet[0];
         Dataset<Row> testingData = splitDataSet[1];
 
@@ -75,33 +76,28 @@ public class ExampleKMeansPipeline1 implements ISparkClusterPipeline {
                 .setVectorSize(100)
                 .setMinCount(0);
 
-
         KMeans kmeans = new KMeans()
                 .setK(20)
                 .setFeaturesCol("features")
                 .setPredictionCol("cluster_label")
                 .setMaxIter(20);
 
-
         Pipeline pipeline = new Pipeline()
-                .setStages(new PipelineStage[] {tokenizer, stopWordsRemover, word2Vec, kmeans});
-
+                .setStages(new PipelineStage[]{tokenizer, stopWordsRemover, word2Vec, kmeans});
 
         // Fit the pipeline to training documents.
         PipelineModel model = pipeline.fit(trainingData);
         Dataset<Row> results = model.transform(inputData);
 
-        System.out.println("\n...........................Results...........................");
-        results.show();
-
         System.out.println("\n......Saving Results...........................");
+
         results.write().mode("overwrite").format("json").save("../DocClassification/myresources/results/example-pipeline-1");
 
         System.out.println("\n...........................Example PipeLine 1: The End...........................");
+        Dataset<Row> sortedResults = results.sort(results.col("cluster_label"));
 
-        return results;
+        return sortedResults;
 
     }
-
 
 }

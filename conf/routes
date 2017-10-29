@@ -23,7 +23,7 @@ POST    /label/remove                   controllers.LabelController.remove
 GET     /spark/train/pipeline/base      controllers.ClusterController.runBasePipeline
 GET     /spark/kmeans/example1          controllers.ClusterController.runPipelineExample1
 GET     /spark/kmeans/example2          controllers.ClusterController.runPipelineExample2
-GET     /dl4j/kmeans/example1           controllers.ClusterController.runPipelineExample3
+GET     /dl4j/kmeans/example1           controllers.ClusterController.runDL4JPipelineExample
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                   controllers.Assets.versioned(path="/public", file: Asset)
