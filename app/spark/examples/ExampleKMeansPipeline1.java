@@ -44,7 +44,7 @@ public class ExampleKMeansPipeline1 implements ISparkClusterPipeline{
 
 
         // Load and parse data
-        String path = new File("../DocClassification/myresources/datasets/tasksNoHeader.csv").getAbsolutePath();
+        String path = new File("myresources/datasets/tasksNoHeader.csv").getAbsolutePath();
         Dataset<Row> inputData = spark.read().csv(path);
 
         //Display Loaded Dataset
@@ -91,7 +91,7 @@ public class ExampleKMeansPipeline1 implements ISparkClusterPipeline{
 
         System.out.println("\n......Saving Results...........................");
 
-        results.write().mode("overwrite").format("json").save("../DocClassification/myresources/results/example-pipeline-1");
+        results.write().mode("overwrite").format("json").save("myresources/results/example-pipeline-1");
 
         System.out.println("\n...........................Example PipeLine 1: The End...........................");
         Dataset<Row> sortedResults = results.sort(results.col("cluster_label"));

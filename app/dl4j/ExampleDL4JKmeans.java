@@ -22,7 +22,7 @@ import java.util.Map;
 public class ExampleDL4JKmeans {
 
     public static void clusterDocuments(){
-        File inputFile = new File("../DocClassification/myresources/datasets/tasksNoHeader.csv");
+        File inputFile = new File("myresources/datasets/tasksNoHeader.csv");
         SentenceIterator sentenceIterator = new LineSentenceIterator(inputFile);
 
         LabelsSource source = new LabelsSource("DOC_");
