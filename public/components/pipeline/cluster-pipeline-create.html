@@ -1,0 +1,86 @@
+<div class="container">
+    <div class="row">
+        <h1>Create new pipeline</h1>
+        <div class="row">
+            <form class="col s12">
+                <div class="row">
+                    <input type="text" ng-model="vm1.pipelineName" id="pipelineName" ng-minlength=3 required/>
+                    <label for="pipelineName">Pipeline name:</label>
+                </div>
+            </form>
+        </div>
+        <div class="row" ng-if="vm1.pipelineName">
+            <form class="col s12">
+                <div class="row">
+                    <p>Select Library</p>
+                    <div class="col s4" ng-repeat="library in vm1.libraries">
+                        <input class="with-gap" name="library" type="radio" id="{{library.id}}" ng-click="vm1.onLibrarySelect(library.id);"/>
+                        <label for="{{library.id}}">{{library.name}}</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row" ng-if="vm1.showRest">
+            <form class="col s12">
+                <div class="row">
+                    <p>Select Clustering Algorithm</p>
+                    <div class="col s4" ng-repeat="algorithm in vm1.selectedLibrary.options.algorithms">
+                        <input class="with-gap" ng-model="vm1.algorithms[algorithm.id]" name="algorithm" type="radio" id="{{algorithm.id}}" ng-click="vm1.onSelectAlgorithm(algorithm.id)"/>
+                        <label for="{{algorithm.id}}">{{algorithm.name}}</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row" ng-if="vm1.showRest">
+            <form class="col s12">
+                <div class="row">
+                    <p>Select preprocessing steps to apply</p>
+                    <div class="col s4" ng-repeat="preprocessor in vm1.selectedLibrary.options.preprocessors">
+                        <input class="with-gap" ng-model="vm1.preprocessors[preprocessor.id]" name="preprocessor" type="checkbox" id="{{preprocessor.id}}"/>
+                        <label for="{{preprocessor.id}}">{{preprocessor.name}}</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row" ng-if="vm1.showRest">
+            <form class="col s12">
+                <div class="row">
+                    <p>Select feature extractor</p>
+                    <div class="col s4" ng-repeat="transformer in vm1.selectedLibrary.options.transformers">
+                        <input class="with-gap" ng-model="vm1.transformers[transformer.id]" name="transformer" type="radio" id="{{transformer.id}}" ng-click="vm1.onSelectTransformer(transformer.id)"/>
+                        <label for="{{transformer.id}}">{{transformer.name}}</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row" ng-if="vm1.showRest">
+            <div class="col s12">
+                <h3>Upload Data</h3>
+            </div>
+            <form class="col s12">
+                <div class="file-field input-field row">
+                    <div class="btn">
+                        <span>Upload</span>
+                        <input type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" onchange="angular.element(this).scope().vm1.onFileUpload(this)" >
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input ng-model="vm1.fileName" class="file-path validate" type="text">
+                    </div>
+                </div>
+            </form>
+            <form class="col s12">
+                <label>Data Format: </label>
+                <div class="row">
+                    <div class="col s4">
+                        <input class="with-gap" ng-model="vm1.format" name="format" type="radio" id="csv"/>
+                        <label for="csv">csv</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <br/>
+        <button type="button" class="btn btn-primary light-blue darken-4 col s12"
+                ng-if="vm1.showRest" ng-click="vm1.createClusteringPipeline()">Save & Run
+        </button>
+    </div>
+</div>

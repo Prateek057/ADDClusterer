@@ -26,10 +26,14 @@ public class SparkStringColumnUtil {
     * Returns Dataset containing a new or renames column called "document"
     * */
     public static Dataset<Row> removePunctuation(String columnName, Dataset<Row> inputDataset) {
-        return inputDataset.withColumn("document", functions.regexp_replace(inputDataset.col(columnName), "[^a-zA-Z0-9]", ""));
+        return inputDataset.withColumn("document", functions.regexp_replace(inputDataset.col(columnName), "^\\w\\s", ""));
     }
 
     public static Dataset<Row> toLowerCase(String columnName, Dataset<Row> inputDataset){
         return inputDataset.withColumn("document", functions.lower(inputDataset.col(columnName)));
+    }
+
+    public static Dataset<Row> addIDColumn(Dataset<Row> inputDataset){
+        return inputDataset.withColumn("DOC_ID", functions.monotonically_increasing_id());
     }
 }

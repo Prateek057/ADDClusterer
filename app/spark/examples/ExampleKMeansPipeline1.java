@@ -15,6 +15,7 @@ import spark.SparkSessionComponent;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import static util.StaticFunctions.deserializeToJSON;
@@ -30,12 +31,11 @@ import static util.StaticFunctions.deserializeToJSON;
 public class ExampleKMeansPipeline1 implements ISparkClusterPipeline{
 
     private SparkSessionComponent sparkSessionComponent;
-    private List<Row> ArrayResults;
 
 
     public Dataset<Row> trainPipeline() {
 
-        System.out.println("\n...........................Example PipeLine 1: Tokenizer, Remove StopWords, Word2Vec, KMeans...........................");
+        System.out.println("\n...........................Example Predict 1: Tokenizer, Remove StopWords, Word2Vec, KMeans...........................");
 
         sparkSessionComponent = SparkSessionComponent.getSparkSessionComponent();
 
@@ -87,7 +87,13 @@ public class ExampleKMeansPipeline1 implements ISparkClusterPipeline{
 
         // Fit the pipeline to training documents.
         PipelineModel model = pipeline.fit(trainingData);
-        Dataset<Row> results = model.transform(inputData);
+        try {
+            model.write().overwrite().save("myresources/models/kmeans-example-1-model");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Dataset<Row> results = model.transform(trainingData);
 
         System.out.println("\n......Saving Results...........................");
 

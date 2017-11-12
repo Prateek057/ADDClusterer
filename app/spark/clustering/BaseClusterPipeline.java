@@ -9,15 +9,14 @@ import org.apache.spark.ml.feature.Tokenizer;
 import org.apache.spark.ml.feature.Word2Vec;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import play.inject.ApplicationLifecycle;
-import spark.*;
+import org.apache.spark.sql.SaveMode;
 import spark.dataloader.CSVDataLoader;
 import spark.dataloader.ISparkDataLoader;
 import spark.preprocessing.SparkCommonPreprocessor;
 
-import javax.inject.Inject;
-
 import java.io.IOException;
+
+import static spark.utils.SparkStringColumnUtil.addIDColumn;
 
 public class BaseClusterPipeline implements ISparkClusterPipeline {
 
@@ -30,14 +29,14 @@ public class BaseClusterPipeline implements ISparkClusterPipeline {
     private KMeans kMeans;
 
 
-    public BaseClusterPipeline(ISparkDataLoader Dl){
-        if(Dl.getClass() == CSVDataLoader.class) {
+    public BaseClusterPipeline(ISparkDataLoader Dl) {
+        if (Dl.getClass() == CSVDataLoader.class) {
             dataLoader = new CSVDataLoader();
         }
         createPipelineStages();
     }
 
-    private void createPipelineStages(){
+    private void createPipelineStages() {
         tokenizer = new Tokenizer()
                 .setInputCol("document")
                 .setOutputCol("words");
@@ -59,25 +58,29 @@ public class BaseClusterPipeline implements ISparkClusterPipeline {
                 .setPredictionCol("cluster_label")
                 .setMaxIter(20);
 
-        basePipelineStages = new PipelineStage[] {tokenizer, stopWordsRemover, word2Vec, kMeans} ;
-        basePipeline =  new Pipeline().setStages(basePipelineStages);
+        basePipelineStages = new PipelineStage[]{tokenizer, stopWordsRemover, word2Vec, kMeans};
+        basePipeline = new Pipeline().setStages(basePipelineStages);
     }
 
 
-    public PipelineModel trainPipeline(String path){
+    public Dataset<Row> trainPipeline(String path, String pipelineName) {
 
         Dataset<Row> dataSet = dataLoader.loadData(path);
+        dataSet = addIDColumn(dataSet);
         String[] columns = dataSet.columns();
         dataSet = SparkCommonPreprocessor.commonPreprocess(dataSet, columns);
 
         PipelineModel pipelineModel = basePipeline.fit(dataSet);
+        Dataset<Row> results = pipelineModel.transform(dataSet);
+
         try {
-           pipelineModel.write().overwrite().save("myresources/models/base-kmeans-model");
+            pipelineModel.write().overwrite().save("myresources/models/" + pipelineName);
+            results.write().format("json").mode("overwrite").save("myresources/results/" + pipelineName);
+            results.write().mode(SaveMode.Overwrite).saveAsTable(pipelineName);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return pipelineModel;
+        return results;
     }
 
 }

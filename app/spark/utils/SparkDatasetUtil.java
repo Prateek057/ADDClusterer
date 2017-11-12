@@ -23,6 +23,7 @@ public class SparkDatasetUtil {
     }
 
     public static JsonNode clusterTableToJson(Dataset<Row> dataSet) {
+        String dataset_count = dataSet.agg(functions.sum("count")).first().get(0).toString();
         ArrayNode clusterArrayNode = new ArrayNode(new JsonNodeFactory(true));
         JsonNode clusterNode = datasetToJson(dataSet);
         clusterNode.forEach(
@@ -39,7 +40,10 @@ public class SparkDatasetUtil {
 
                 }
         );
-        return Json.toJson(clusterArrayNode);
+        ObjectNode on = new ObjectNode(new JsonNodeFactory(true));
+        on.set("member_count", Json.toJson(dataset_count));
+        on.set("cluster_table", Json.toJson(clusterArrayNode));
+        return Json.toJson(on);
     }
 
 

@@ -7,6 +7,7 @@ angular.module('cApp', [
     'ui.bootstrap',
     'cApp.pipeline',
     'cApp.classify',
+    'cApp.cluster',
     'checklist-model'
 ])
 .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {

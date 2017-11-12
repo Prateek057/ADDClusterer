@@ -1,0 +1,112 @@
+{
+  "libraries": [
+    {
+      "name": "Apache Spark",
+      "id": 1,
+      "options": {
+        "algorithms": [
+          {
+            "name": "KMeans",
+            "id": "spark-kmeans"
+          },
+          {
+            "name": "Bisecting-KMeans",
+            "id": "spark-bi-kmeans"
+          }
+        ],
+        "preprocessors": [
+          {
+            "name": "Tokenize",
+            "id": "spark-tokenizer"
+          },
+          {
+            "name": "Stop Words Remover",
+            "id": "spark-stop-word-remover"
+          },
+          {
+            "name": "To Lower Case",
+            "id": "spark-to-lowercase"
+          },
+          {
+            "name": "Remove Punctuations",
+            "id": "spark-remove-punctuations"
+          },
+          {
+            "name": "N-Gram",
+            "id": "spark-n-gram"
+          }
+        ],
+        "transformers": [
+          {
+            "name": "Hashing-TF",
+            "id": "hashing-tf"
+          },
+          {
+            "name": "Word2Vec",
+            "id": "spark-word2vec"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WEKA",
+      "id": 2,
+      "options": {
+        "algorithms": [
+          {
+            "name": "Simple KMeans",
+            "id": "weka-skm"
+          },
+          {
+            "name": "Hierarchial Clustered",
+            "id": "weka-hc"
+          },
+          {
+            "name": "Farthest First",
+            "id": "weka-ff"
+          },
+          {
+            "name": "EM",
+            "id": "weka-em"
+          },
+          {
+            "name": "Filtered Clustered",
+            "id": "weka-em"
+          }
+        ],
+        "preprocessors": [
+          {
+            "name": "Tokenize",
+            "id": "weka-tokenizer"
+          },
+          {
+            "name": "Remove Stop Words",
+            "id": "weka-stop-word-remover"
+          },
+          {
+            "name": "To Lower Case",
+            "id": "weka-to-lowercase"
+          },
+          {
+            "name": "Remove Punctuations",
+            "id": "weka-remove-punctuations"
+          },
+          {
+            "name": "Generate N-Gram",
+            "id": "weka-n-gram"
+          }
+        ],
+        "transformers": [
+          {
+            "name": "Hashing-TF",
+            "id": "hashing-tf"
+          },
+          {
+            "name": "Word2Vec",
+            "id": "word2vec"
+          }
+        ]
+      }
+    }
+  ]
+}

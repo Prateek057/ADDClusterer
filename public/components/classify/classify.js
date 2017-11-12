@@ -13,16 +13,16 @@ classifyApp.config(['$routeProvider', function($routeProvider) {
             }
         }
     })
-    .when('/executePipeline/:param', {
-        templateUrl: '/assets/components/classify/executePipeline.html',
-        controller: 'ExecutePipelineCtrl',
-        controllerAs: 'vm',
-        resolve: {
-            pipeline: function(PipelineDataService, $route) {
-                return PipelineDataService.getPipeline($route.current.params.param);
+        .when('/executePipeline/:param', {
+            templateUrl: '/assets/components/classify/executePipeline.html',
+            controller: 'ExecutePipelineCtrl',
+            controllerAs: 'vm',
+            resolve: {
+                pipeline: function(PipelineDataService, $route) {
+                    return PipelineDataService.getPipeline($route.current.params.param);
+                }
             }
-        }
-    });
+        });
 }]);
 
 classifyApp.controller('ClassifyCtrl', ['pipelines', '$http', function(pipelines, $http) {
