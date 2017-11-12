@@ -57,12 +57,8 @@ public class ClusterController extends Controller {
 
     //Run DL4J Pipeline1
     public Result runDL4JPipelineExample() {
-        try {
             clusterDocuments();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return ok();
+            return ok();
     }
 
     public Result runPipeline(String pipelineName) {
