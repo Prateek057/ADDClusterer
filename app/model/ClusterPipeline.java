@@ -19,12 +19,24 @@ public class ClusterPipeline  extends PersistentEntity{
     private ArrayList<String> preprocessors;
     private String transformer;
 
+    public ClusterPipeline(){
+
+    }
+
     public ClusterPipeline(String href, String name, String library, String algorithm, String transformer, ArrayList<String> preprocessors){
         this.name = name;
         this.href = href;
         this.library = library;
         this.algorithm = algorithm;
         this.preprocessors = preprocessors;
+        this.transformer = transformer;
+    }
+
+    public ClusterPipeline(String href, String name, String library, String algorithm, String transformer){
+        this.name = name;
+        this.href = href;
+        this.library = library;
+        this.algorithm = algorithm;
         this.transformer = transformer;
     }
 

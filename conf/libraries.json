@@ -7,7 +7,10 @@
         "algorithms": [
           {
             "name": "KMeans",
-            "id": "spark-kmeans"
+            "id": "spark-kmeans",
+            "options": {
+                "k": 20
+            }
           },
           {
             "name": "Bisecting-KMeans",
@@ -16,24 +19,15 @@
         ],
         "preprocessors": [
           {
-            "name": "Tokenize",
-            "id": "spark-tokenizer"
-          },
-          {
             "name": "Stop Words Remover",
             "id": "spark-stop-word-remover"
           },
           {
-            "name": "To Lower Case",
-            "id": "spark-to-lowercase"
-          },
-          {
-            "name": "Remove Punctuations",
-            "id": "spark-remove-punctuations"
-          },
-          {
             "name": "N-Gram",
-            "id": "spark-n-gram"
+            "id": "spark-n-gram",
+            "options":{
+              "n-value": 2
+            }
           }
         ],
         "transformers": [
@@ -99,11 +93,15 @@
         "transformers": [
           {
             "name": "Hashing-TF",
-            "id": "hashing-tf"
+            "id": "weka-hashing-tf"
           },
           {
-            "name": "Word2Vec",
-            "id": "word2vec"
+            "name": "StringToWordVec",
+            "id": "weka-string2wordVec"
+          },
+          {
+            "name": "Bi-Grams",
+            "id": "weka-bigrams"
           }
         ]
       }

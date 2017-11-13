@@ -92,7 +92,7 @@ pipelineApp.controller('RunPipelineCtrl', ['$http', '$location', function(pipeli
     self.pipelines = pipelines;
 }]);
 
-pipelineApp.controller('ClusterPipelineCtrl', ['pipelines', 'libraries','$http', '$location', function (pipelines, libraries, $http) {
+pipelineApp.controller('ClusterPipelineCtrl', ['pipelines', 'libraries','$http', '$location', function (pipelines, libraries, $http, $location) {
     var self = this;
     self.pipelines = pipelines;
     self.libraries = libraries;
@@ -113,10 +113,21 @@ pipelineApp.controller('ClusterPipelineCtrl', ['pipelines', 'libraries','$http',
           id:id
       }
     };
-    self.onFileUpload = function (ele) {
+    self.onFileChange = function (ele) {
         var files = ele.files;
         self.file = files[0];
     };
+    self.uploadDataSetFile = function(){
+        var fd = new FormData();
+        fd.append("file", self.file);
+        $http.post("/clustering/dataset/upload", fd, {
+            headers: {'Content-Type': undefined}
+        }).then(function(response) {
+            self.dataset = response.data.results.path;
+            console.log(response);
+        });
+    };
+
     self.createClusteringPipeline = function () {
         var request_url = "";
         var pipelineName = self.pipelineName;
@@ -126,6 +137,7 @@ pipelineApp.controller('ClusterPipelineCtrl', ['pipelines', 'libraries','$http',
             case 2: request_url = "/weka/train/pipeline/" + pipelineName;
             break;
         }
+
         var data = {
             pipeline: {
                 href: request_url,
@@ -134,15 +146,16 @@ pipelineApp.controller('ClusterPipelineCtrl', ['pipelines', 'libraries','$http',
                     name: self.selectedLibrary.name,
                     id: self.selectedLibrary.id
                 },
+                dataset: self.dataset,
                 algorithm: self.algorithm,
                 preprocessors: self.preprocessors,
-                transformer: self.transformer,
-                file : self.file
+                transformer: self.transformer
             }
         };
-
         $http.post("/clustering/pipeline/create", data).then(function(response) {
-            console.log("done");
+            if(response.data.results){
+                $location.path("/clustering/clusters/"+pipelineName);
+            }
         });
 
     };

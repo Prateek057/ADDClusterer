@@ -2,10 +2,13 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import model.PersistentEntity;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.h2.store.fs.FileUtils;
 import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import services.PipelineService;
 import spark.clustering.BaseClusterPipeline;
@@ -13,6 +16,7 @@ import spark.dataloader.CSVDataLoader;
 import spark.examples.ExampleKMeansPipeline1;
 import spark.examples.ExampleKMeansPipeline2;
 import spark.pipelines.SparkPipelineFactory;
+import util.StaticFunctions;
 
 import javax.inject.Inject;
 
@@ -102,6 +106,11 @@ public class ClusterController extends Controller {
         return ok(Json.toJson(jsonResults));
     }
 
+    public Result getAllClusterPipelines(){
+        List<? extends PersistentEntity> pipelines = PipelineService.getAllClusterPipelines();
+        return ok(Json.parse(StaticFunctions.deserializeToJSON(pipelines)));
+    }
+
     public Result getLibraries() {
         try {
             FileInputStream conf = new FileInputStream("conf/libraries.json");
@@ -112,7 +121,21 @@ public class ClusterController extends Controller {
             return ok(Json.parse("{results: null}"));
         }
     }
+    public Result datasetUpload(){
+        Http.MultipartFormData<File> body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart<File> dataset = body.getFile("file");
+        if (dataset != null) {
+            String fileName = dataset.getFilename();
+            String contentType = dataset.getContentType();
+            File file = dataset.getFile();
+            String newPath = "myresources/datasets/"+fileName;
+            file.renameTo(new File(newPath));
+            return ok(Json.parse("{ \"results\": { \"path\": \""+newPath+ " \"}}"));
 
+        } else{
+            return ok();
+        }
+    }
     public Result createClusterPipeline(){
         JsonNode data = request().body().asJson().get("pipeline");
         JsonNode results = Json.toJson(Json.parse("{}"));
@@ -130,7 +153,7 @@ public class ClusterController extends Controller {
             break;
             default: {
                 SparkPipelineFactory sparkPipelineFactory = new SparkPipelineFactory(data);
-                String path = "myresources/datasets/tasksNoHeader.csv";
+                String path = data.get("dataset").asText();
                 Dataset<Row> spark_results = sparkPipelineFactory.trainPipeline(data.get("name").toString(), path, "csv");
                 results = datasetToJson(extractClusterTablefromDataset(spark_results));
             }

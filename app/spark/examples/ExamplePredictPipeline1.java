@@ -12,11 +12,7 @@ import java.io.File;
 public class ExamplePredictPipeline1 {
 
     private static SparkSessionComponent sparkSessionComponent;
-    //private SparkSessionComponent sparkSessionComponent;
-    //TODO: Load CSV Data as Testing Dataset
-    //TODO: Load given Pipeline Model
-    //TODO: Transform Dataset using the model
-    //TODO: Return Results
+
     public static Dataset<Row> predictLables(String modelName){
         System.out.println("\n...........................Example PipeLine 1: Tokenizer, Remove StopWords, Word2Vec, KMeans...........................");
 

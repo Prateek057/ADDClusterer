@@ -23,9 +23,11 @@ POST        /label/remove                       controllers.LabelController.remo
 #GET     /spark/train/pipeline/base      controllers.ClusterController.runBasePipeline
 GET         /clustering/libraries               controllers.ClusterController.getLibraries
 GET         /clustering/pipelines               controllers.ClusterController.getTrainedPipelines
+GET         /clustering/pipelines/getAll        controllers.ClusterController.getAllClusterPipelines
 GET         /clustering/results                 controllers.ClusterController.getClusterResults
 GET         /pipeline/clusters/:pipelineName    controllers.ClusterController.getAllClustersFromPipeline(pipelineName: String)
 POST        /clustering/pipeline/create         controllers.ClusterController.createClusterPipeline
+POST        /clustering/dataset/upload          controllers.ClusterController.datasetUpload
 
 GET         /spark/train/pipeline/:name         controllers.ClusterController.runPipeline(name: String)
 GET         /spark/kmeans/example1              controllers.ClusterController.runPipelineExample1
