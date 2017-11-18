@@ -8,7 +8,7 @@ import org.apache.spark.ml.feature.HashingTF;
 import org.apache.spark.ml.feature.StopWordsRemover;
 import org.apache.spark.ml.feature.Tokenizer;
 import org.apache.spark.sql.*;
-import spark.clustering.ISparkClusterPipeline;
+import spark.clusterers.ISparkClusterPipeline;
 import spark.SparkSessionComponent;
 
 import java.io.File;

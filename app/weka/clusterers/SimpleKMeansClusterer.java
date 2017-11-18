@@ -1,6 +1,5 @@
-package weka.Clusterers;
+package weka.clusterers;
 
-import weka.clusterers.SimpleKMeans;
 import weka.core.DistanceFunction;
 import weka.core.EuclideanDistance;
 

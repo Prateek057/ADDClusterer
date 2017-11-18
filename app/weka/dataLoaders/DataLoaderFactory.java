@@ -1,8 +1,9 @@
-package spark.dataloader;
+package weka.dataLoaders;
+
 
 public class DataLoaderFactory {
-    public ISparkDataLoader getDataLoader(String type){
-        ISparkDataLoader dataLoader;
+    public IWekaDataLoader getDataLoader(String type){
+        IWekaDataLoader dataLoader;
         switch (type){
             case "csv": dataLoader = new CSVDataLoader();
             break;

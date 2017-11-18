@@ -1,6 +1,5 @@
-package weka.Classifiers;
+package weka.classifiers;
 
-import weka.classifiers.AbstractClassifier;
 import weka.classifiers.functions.LibSVM;
 import weka.core.SelectedTag;
 

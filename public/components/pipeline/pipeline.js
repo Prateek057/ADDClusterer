@@ -21,9 +21,9 @@ pipelineApp.factory('PipelineDataService', ['$http', function PipelineDataServic
                 return response.data;
             });
     };
-    var getLibraries= function () {
+    var getLibraries = function () {
         return $http.get('/clustering/libraries')
-            .then(function(response){
+            .then(function (response) {
                 return response.data.libraries;
             })
     };
@@ -50,7 +50,7 @@ pipelineApp.config(['$routeProvider', function ($routeProvider) {
                 }
             }
         })
-        .when('/pipelines/run',{
+        .when('/pipelines/run', {
             templateUrl: '/assets/components/pipeline/cluster-pipeline.html',
             controller: 'RunPipelineCtrl',
             controllerAs: 'vm',
@@ -65,7 +65,7 @@ pipelineApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'ClusterPipelineCtrl',
             controllerAs: 'vm1',
             resolve: {
-                pipelines: function(PipelineDataService) {
+                pipelines: function (PipelineDataService) {
                     return PipelineDataService.getPipelines();
                 },
                 libraries: function (PipelineDataService) {
@@ -87,42 +87,66 @@ pipelineApp.config(['$routeProvider', function ($routeProvider) {
         });
 }]);
 
-pipelineApp.controller('RunPipelineCtrl', ['$http', '$location', function(pipelines, $http){
+pipelineApp.controller('RunPipelineCtrl', ['$http', '$location', function (pipelines, $http) {
     var self = this;
     self.pipelines = pipelines;
 }]);
 
-pipelineApp.controller('ClusterPipelineCtrl', ['pipelines', 'libraries','$http', '$location', function (pipelines, libraries, $http, $location) {
+pipelineApp.controller('ClusterPipelineCtrl', ['pipelines', 'libraries', '$http', '$location', function (pipelines, libraries, $http, $location) {
     var self = this;
     self.pipelines = pipelines;
     self.libraries = libraries;
     self.showRest = false;
-    self.onLibrarySelect= function(id){
+    self.onLibrarySelect = function (id) {
         console.log(id);
-        self.selectedLibrary = self.libraries[id-1];
+        self.selectedLibrary = self.libraries[id - 1];
         self.showRest = true;
         console.log(self.selectedLibrary);
     };
+    var AnimateRotate = function (angle,repeat) {
+        var duration= 1000;
+        self.rotateNumber = setTimeout(function() {
+            if(repeat && repeat == "infinite") {
+                AnimateRotate(angle,repeat);
+            } else if ( repeat && repeat > 1) {
+                AnimateRotate(angle, repeat-1);
+            }
+        },duration);
+        var $elem = $('#upload-icon');
+
+        $({deg: 0}).animate({deg: angle}, {
+            duration: duration,
+            step: function(now) {
+                $elem.css({
+                    'transform': 'rotate('+ now +'deg)'
+                });
+            }
+        });
+    };
+
     self.onSelectTransformer = function (id) {
-      self.transformer = {
-          id: id
-      };
+        self.transformer = {
+            id: id
+        };
     };
     self.onSelectAlgorithm = function (id) {
-      self.algorithm = {
-          id:id
-      }
+        self.algorithm = {
+            id: id
+        }
     };
     self.onFileChange = function (ele) {
         var files = ele.files;
         self.file = files[0];
     };
-    self.uploadDataSetFile = function(){
+    self.uploadDataSetFile = function () {
+        AnimateRotate(360,"infinite");
         var fd = new FormData();
         fd.append("file", self.file);
         $http.post("/clustering/dataset/upload", fd, {
             headers: {'Content-Type': undefined}
-        }).then(function(response) {
+        }).then(function (response) {
+            clearTimeout(self.rotateNumber);
+            Materialize.toast('File Uploaded!', 5000, "bottom");
             self.dataset = response.data.results.path;
             console.log(response);
         });
@@ -131,13 +155,18 @@ pipelineApp.controller('ClusterPipelineCtrl', ['pipelines', 'libraries','$http',
     self.createClusteringPipeline = function () {
         var request_url = "";
         var pipelineName = self.pipelineName;
-        switch(self.selectedLibrary.id){
-            case 1: request_url = "/spark/train/pipeline/" + pipelineName;
-            break;
-            case 2: request_url = "/weka/train/pipeline/" + pipelineName;
-            break;
+        switch (self.selectedLibrary.id) {
+            case 1:
+                request_url = "/spark/train/pipeline/" + pipelineName;
+                break;
+            case 2:
+                request_url = "/weka/train/pipeline/" + pipelineName;
+                break;
         }
-
+        Materialize.toast('Creating Pipeline, Please Wait!', 5000);
+        $("#progress").css({
+            "visibility": "visible"
+        });
         var data = {
             pipeline: {
                 href: request_url,
@@ -152,15 +181,20 @@ pipelineApp.controller('ClusterPipelineCtrl', ['pipelines', 'libraries','$http',
                 transformer: self.transformer
             }
         };
-        $http.post("/clustering/pipeline/create", data).then(function(response) {
-            if(response.data.results){
-                $location.path("/clustering/clusters/"+pipelineName);
-            }
-        });
+        $http.post("/clustering/pipeline/create", data)
+            .then(function (response) {
+                Materialize.toast('Pipeline Create!', 4000);
+                $("#progress").css({
+                    "visibility": "hidden"
+                });
+                Materialize.toast('You will be redirect to visualize results', 5000); // 4000 is the duration of the toast
+                if (response.data.results) {
+                    $location.path("/clustering/clusters/" + pipelineName);
+                }
+            });
 
     };
 }]);
-
 
 
 pipelineApp.controller('PipelineCtrl', ['pipelines', 'libraries', '$http', '$location', function (pipelines, libraries, $http, $location) {
@@ -191,7 +225,7 @@ pipelineApp.controller('PipelineCtrl', ['pipelines', 'libraries', '$http', '$loc
         if (self.pipelineName === undefined || self.pipelineName.length === 0) {
             self.message = "Please provide a name!"
         }
-        else if(self.dataFile){
+        else if (self.dataFile) {
 
         }
         else {

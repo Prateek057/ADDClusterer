@@ -21,3 +21,11 @@
 .chalk{
     background-color: #648BA9;
 }
+.progress{
+    margin: 0;
+    height: 5px;
+    visibility: hidden;
+}
+.progress .indeterminate{
+    background-color: #c0392b;
+}

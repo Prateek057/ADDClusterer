@@ -1,7 +1,4 @@
-package weka.Clusterers;
-
-import weka.clusterers.AbstractClusterer;
-import weka.clusterers.*;
+package weka.clusterers;
 
 public class ClusterFactory {
 

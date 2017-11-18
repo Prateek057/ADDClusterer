@@ -7,16 +7,12 @@ import org.apache.spark.ml.feature.Tokenizer;
 import org.apache.spark.ml.feature.*;
 import org.apache.spark.ml.clustering.KMeans;
 import org.apache.spark.sql.*;
-import play.inject.ApplicationLifecycle;
-import scala.Tuple2;
-import spark.clustering.ISparkClusterPipeline;
+import spark.clusterers.ISparkClusterPipeline;
 import spark.SparkSessionComponent;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import static util.StaticFunctions.deserializeToJSON;
 

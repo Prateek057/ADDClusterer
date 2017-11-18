@@ -7,6 +7,7 @@ import model.PersistentEntity;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.SparkSession;
 import spark.SparkSessionComponent;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,19 +28,23 @@ public class PipelineService {
 
     public static Dataset<Row> getPipelineClusters(String pipelineName){
         SparkSessionComponent sparkSessionComponent = SparkSessionComponent.getSparkSessionComponent();
-        SQLContext sqlContext = sparkSessionComponent.getSqlContext();
-        return sqlContext.sql("select * from default."+pipelineName);
+        SparkSession spark = sparkSessionComponent.getSparkSession();
+        return spark.read().json("myresources/results/" + pipelineName);
+        //SQLContext sqlContext = sparkSessionComponent.getSqlContext();
+        //return sqlContext.sql("select * from default."+pipelineName);
     }
 
     public static void saveClusterPipelineSettings(JsonNode settings){
         ClusterPipeline clusterPipeline = new ClusterPipeline(
-                settings.get("href").toString(),
-                settings.get("name").toString(),
-                settings.get("library").toString(),
-                settings.get("algorithm").get("id").toString(),
-                settings.get("transformer").get("id").toString()
+                settings.get("href").asText(),
+                settings.get("name").asText(),
+                settings.get("library").get("id").asText(),
+                settings.get("algorithm").get("id").asText(),
+                settings.get("transformer").get("id").asText(),
+                settings.get("dataset").asText()
                 //getPreprocessorList(settings.get("preprocessors"))
                 );
+        System.out.print(clusterPipeline);
         clusterPipeline.save();
     }
 

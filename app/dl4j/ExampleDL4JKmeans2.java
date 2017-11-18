@@ -1,9 +1,7 @@
 package dl4j;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import spark.dataloader.CSVDataLoader;
+import spark.dataloaders.CSVDataLoader;
 
 import java.util.List;
 

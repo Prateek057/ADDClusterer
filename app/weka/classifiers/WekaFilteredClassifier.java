@@ -1,6 +1,5 @@
-package weka.Classifiers;
+package weka.classifiers;
 
-import weka.classifiers.AbstractClassifier;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.filters.Filter;
 

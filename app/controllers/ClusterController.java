@@ -5,65 +5,33 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import model.PersistentEntity;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.h2.store.fs.FileUtils;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import services.PipelineService;
-import spark.clustering.BaseClusterPipeline;
-import spark.dataloader.CSVDataLoader;
-import spark.examples.ExampleKMeansPipeline1;
-import spark.examples.ExampleKMeansPipeline2;
+import spark.clusterers.BaseClusterPipeline;
+import spark.dataloaders.CSVDataLoader;
 import spark.pipelines.SparkPipelineFactory;
 import util.StaticFunctions;
 
-import javax.inject.Inject;
-
 import java.io.*;
 import java.util.List;
-
-import static dl4j.ExampleDL4JKmeans.clusterDocuments;
 import static java.lang.Integer.parseInt;
-import static rm.CSVDataLoader.rmCSVLoader;
-import static spark.examples.ExamplePredictPipeline1.predictLables;
 import static spark.utils.SparkDatasetUtil.clusterTableToJson;
 import static spark.utils.SparkDatasetUtil.datasetToJson;
 import static spark.utils.SparkDatasetUtil.extractClusterTablefromDataset;
 
 public class ClusterController extends Controller {
 
-    @Inject
-    private ExampleKMeansPipeline1 exampleKMeansPipeline1;
-
-    @Inject
-    private ExampleKMeansPipeline2 exampleKMeansPipeline2;
 
 
-    public JsonNode getSortedClusterResults(Dataset<Row> dataset) {
+
+    public static JsonNode getSortedClusterResults(Dataset<Row> dataset) {
         Dataset<Row> sortedResults = dataset.sort("cluster_label");
         return clusterTableToJson(sortedResults);
     }
 
-    //Run Spark KMean Example Pipeline1
-    public Result runPipelineExample1() {
-        Dataset<Row> results = exampleKMeansPipeline1.trainPipeline();
-        JsonNode jsonResults = getSortedClusterResults(extractClusterTablefromDataset(results));
-        return ok(jsonResults);
-    }
-
-    //Run Spark KMean Example Pipeline2
-    public Result runPipelineExample2() {
-        Dataset<Row> results = exampleKMeansPipeline2.trainPipeline();
-        JsonNode jsonResults = getSortedClusterResults(extractClusterTablefromDataset(results));
-        return ok(jsonResults);
-    }
-
-    //Run DL4J Pipeline1
-    public Result runDL4JPipelineExample() {
-            clusterDocuments();
-            return ok();
-    }
 
     public Result runPipeline(String pipelineName) {
         CSVDataLoader csvDataLoader = new CSVDataLoader();
@@ -73,21 +41,7 @@ public class ClusterController extends Controller {
         return ok(jsonResults);
     }
 
-    //Run RM Pipeline1
-    public Result runRm() {
-        try {
-            rmCSVLoader();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return ok();
-    }
 
-    public Result runPredictPipelineExample1(String modelName) {
-        Dataset<Row> results = predictLables(modelName);
-        JsonNode jsonResults = getSortedClusterResults(extractClusterTablefromDataset(results));
-        return ok(jsonResults);
-    }
 
     public Result getTrainedPipelines() {
         List<String> results = PipelineService.getAllTrainedModels();
@@ -107,8 +61,10 @@ public class ClusterController extends Controller {
     }
 
     public Result getAllClusterPipelines(){
+        JsonNode pipelines_json = Json.toJson(Json.parse("{}"));
         List<? extends PersistentEntity> pipelines = PipelineService.getAllClusterPipelines();
-        return ok(Json.parse(StaticFunctions.deserializeToJSON(pipelines)));
+        JsonNode deserializedPipelines = Json.parse(StaticFunctions.deserializeToJSON(pipelines));
+        return ok(((ObjectNode) pipelines_json).set("pipelines", deserializedPipelines));
     }
 
     public Result getLibraries() {
@@ -138,6 +94,7 @@ public class ClusterController extends Controller {
     }
     public Result createClusterPipeline(){
         JsonNode data = request().body().asJson().get("pipeline");
+        System.out.print(data);
         JsonNode results = Json.toJson(Json.parse("{}"));
         switch(parseInt(data.get("library").get("id").toString())){
             case 1: {

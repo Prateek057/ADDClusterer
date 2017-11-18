@@ -20,10 +20,17 @@ clusterPipelineApp.factory('ClusterPipelineDataService', ['$http', function Pipe
                 return response.data.cluster_table;
             });
     };
+    var getAllPipelines = function () {
+        return $http.get('/clustering/pipelines/getAll')
+            .then(function (response) {
+                return response.data.pipelines;
+            })
+    };
     return {
         getPipelineResults: getPipelineResults,
         getPipelineClusters: getPipelineClusters,
-        getPipelineModels: getPipelineModels
+        getPipelineModels: getPipelineModels,
+        getAllPipelines: getAllPipelines
     };
 }]);
 clusterPipelineApp.config(['$routeProvider', function ($routeProvider) {
@@ -34,7 +41,7 @@ clusterPipelineApp.config(['$routeProvider', function ($routeProvider) {
             controllerAs: 'vm2',
             resolve: {
                 pipelines: function (ClusterPipelineDataService) {
-                    return ClusterPipelineDataService.getPipelineResults();
+                    return ClusterPipelineDataService.getAllPipelines();
                 }
             }
         })
@@ -52,8 +59,8 @@ clusterPipelineApp.config(['$routeProvider', function ($routeProvider) {
 
 clusterPipelineApp.controller('VisualizePipelineCtrl', ['pipelines', '$http', '$location', function (pipelines, $http, $location) {
     var self = this;
+    console.log(pipelines);
     self.pipelines = pipelines;
-
 }]);
 
 clusterPipelineApp.controller('VisualizePipelineClustersCtrl', ['clusters', '$http', '$location', function (clusters, $http, $location) {

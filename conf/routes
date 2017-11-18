@@ -20,7 +20,8 @@ GET         /classifiers                        controllers.PipelineController.g
 POST        /label/create                       controllers.LabelController.create
 POST        /label/remove                       controllers.LabelController.remove
 
-#GET     /spark/train/pipeline/base      controllers.ClusterController.runBasePipeline
+
+#Cluster Pipeline Configuration API
 GET         /clustering/libraries               controllers.ClusterController.getLibraries
 GET         /clustering/pipelines               controllers.ClusterController.getTrainedPipelines
 GET         /clustering/pipelines/getAll        controllers.ClusterController.getAllClusterPipelines
@@ -29,12 +30,14 @@ GET         /pipeline/clusters/:pipelineName    controllers.ClusterController.ge
 POST        /clustering/pipeline/create         controllers.ClusterController.createClusterPipeline
 POST        /clustering/dataset/upload          controllers.ClusterController.datasetUpload
 
-GET         /spark/train/pipeline/:name         controllers.ClusterController.runPipeline(name: String)
-GET         /spark/kmeans/example1              controllers.ClusterController.runPipelineExample1
-GET         /spark/kmeans/example2              controllers.ClusterController.runPipelineExample2
-GET         /spark/predict/:modelName           controllers.ClusterController.runPredictPipelineExample1(modelName: String)
-GET         /dl4j/kmeans/example1               controllers.ClusterController.runDL4JPipelineExample
-GET         /rm                                 controllers.ClusterController.runRm
+
+#Example Pipelines
+GET         /spark/kmeans/example1              controllers.ExampleController.runPipelineExample1
+GET         /spark/kmeans/example2              controllers.ExampleController.runPipelineExample2
+GET         /spark/predict/:modelName           controllers.ExampleController.runPredictPipelineExample1(modelName: String)
+GET         /dl4j/kmeans/example1               controllers.ExampleController.runDL4JPipelineExample
+GET         /rm                                 controllers.ExampleController.runRm
+GET         /weka/dl/example1                   controllers.ExampleController.runDataSourceExample
 
 
 # Map static resources from the /public folder to the /assets URL path

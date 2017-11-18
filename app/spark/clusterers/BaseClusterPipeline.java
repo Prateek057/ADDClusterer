@@ -1,4 +1,4 @@
-package spark.clustering;
+package spark.clusterers;
 
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
@@ -10,8 +10,8 @@ import org.apache.spark.ml.feature.Word2Vec;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
-import spark.dataloader.CSVDataLoader;
-import spark.dataloader.ISparkDataLoader;
+import spark.dataloaders.CSVDataLoader;
+import spark.dataloaders.ISparkDataLoader;
 import spark.preprocessing.SparkCommonPreprocessor;
 
 import java.io.IOException;

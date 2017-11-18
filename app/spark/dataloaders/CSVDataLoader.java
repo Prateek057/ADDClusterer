@@ -1,4 +1,4 @@
-package spark.dataloader;
+package spark.dataloaders;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

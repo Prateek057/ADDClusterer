@@ -1,4 +1,4 @@
-package weka.Filters;
+package weka.filters;
 
 import weka.core.stemmers.NullStemmer;
 import weka.filters.unsupervised.attribute.StringToWordVector;

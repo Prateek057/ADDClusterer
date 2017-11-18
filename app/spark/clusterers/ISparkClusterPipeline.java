@@ -1,4 +1,4 @@
-package spark.clustering;
+package spark.clusterers;
 
 //import org.apache.spark.ml.PipelineModel;
 

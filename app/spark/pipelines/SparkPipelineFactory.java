@@ -10,9 +10,8 @@ import org.apache.spark.ml.feature.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
-import spark.clustering.SparkClusterFactory;
-import spark.dataloader.DataLoaderFactory;
-import spark.dataloader.ISparkDataLoader;
+import spark.dataloaders.DataLoaderFactory;
+import spark.dataloaders.ISparkDataLoader;
 
 import java.io.IOException;
 
@@ -49,7 +48,6 @@ public class SparkPipelineFactory {
 
     public SparkPipelineFactory(JsonNode settings){
         dataLoaderFactory = new DataLoaderFactory();
-
         initPipelineStages();
         saveClusterPipelineSettings(settings);
         setPipelineStages(settings);

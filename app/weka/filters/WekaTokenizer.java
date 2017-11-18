@@ -1,4 +1,4 @@
-package weka.Filters;
+package weka.filters;
 
 import weka.core.tokenizers.WordTokenizer;
 

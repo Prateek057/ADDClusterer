@@ -48,7 +48,7 @@ public class SparkDatasetUtil {
 
 
     /*
-    * Input Dataset should already contain a column consisting of cluster_label names "cluster_label"
+    * Input Dataset should already contain a column with cluster labels named "cluster_label"
     */
     public static Dataset<Row> extractClusterTablefromDataset(Dataset<Row> dataset) {
 

@@ -1,5 +1,7 @@
 function draw() {
-    $("#progress").show();
+    $("#progress").css({
+        "visibility":"visible"
+    });
     var pipelinePath = window.location.pathname.split("/");
     var pipelineName = pipelinePath[pipelinePath.length-1];
     var margin = {top: 20, right: 120, bottom: 20, left: 120},
@@ -66,7 +68,9 @@ function draw() {
         root.cluster_table.forEach(collapse);
         update(root.cluster_table);
 
-        $("#progress").hide();
+        $("#progress").css({
+            "visibility": "hidden"
+        });
     });
 
 

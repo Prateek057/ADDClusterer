@@ -1,7 +1,4 @@
-package weka.Classifiers;
-
-import util.StaticFunctions;
-import weka.classifiers.AbstractClassifier;
+package weka.classifiers;
 
 /**
  * Created by Manoj on 7/12/2017.
