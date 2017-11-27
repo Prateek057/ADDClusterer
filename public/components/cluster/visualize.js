@@ -1,3 +1,8 @@
+$(document).ready(function(){
+    $('ul.tabs').tabs();
+});
+
+
 function draw() {
     $("#progress").css({
         "visibility":"visible"

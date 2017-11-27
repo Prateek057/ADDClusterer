@@ -6,7 +6,7 @@ public class ClusterFactory {
         AbstractClusterer clusterer;
         switch (classifierName) {
             case "KMeans":
-                clusterer = new SimpleKMeans();
+                clusterer = new SimpleKMeansClusterer().get();
                 break;
             default:
                 clusterer = getDefaultClusterer();

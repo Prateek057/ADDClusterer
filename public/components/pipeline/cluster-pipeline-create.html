@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row">
         <h1>Create new pipeline</h1>
-        <div class="row">
+        <div id="pipelineNameInput" class="row">
             <form class="col s12">
                 <div class="row">
                     <input type="text" ng-model="vm1.pipelineName" id="pipelineName" ng-minlength=3 required/>
@@ -9,46 +9,138 @@
                 </div>
             </form>
         </div>
-        <div class="row" ng-if="vm1.pipelineName">
-            <form class="col s12">
-                <div class="row">
-                    <p>Select Library</p>
-                    <div class="col s4" ng-repeat="library in vm1.libraries">
-                        <input class="with-gap" name="library" type="radio" id="{{library.id}}"
-                               ng-click="vm1.onLibrarySelect(library.id);"/>
-                        <label for="{{library.id}}">{{library.name}}</label>
+        <div id="libraryInput" class="row" ng-if="vm1.pipelineName">
+            <br>
+            <div class="col s8">
+                <form>
+                    <div class="row">
+                        <p>Select Library</p>
+                        <div class="col s4" ng-repeat="library in vm1.libraries">
+                            <input class="with-gap" name="library" type="radio" id="{{library.id}}"
+                                   ng-click="vm1.onLibrarySelect(library.id);"/>
+                            <label for="{{library.id}}">{{library.name}}</label>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+                <form ng-if="vm1.showRest">
+                    <div class="row">
+                        <p>Select Clustering Algorithm</p>
+                        <div class="col s4" ng-repeat="algorithm in vm1.selectedLibrary.options.algorithms">
+                            <input class="with-gap" ng-model="vm1.algorithms[algorithm.id]" name="algorithm" type="radio"
+                                   id="{{algorithm.id}}" ng-click="vm1.onSelectAlgorithm(algorithm.id)"/>
+                            <label for="{{algorithm.id}}">{{algorithm.name}}</label>
+                        </div>
+                    </div>
+                </form>
+                <form ng-if="vm1.showRest">
+                    <div class="row">
+                        <p>Select feature extractor</p>
+                        <div class="col s4" ng-repeat="transformer in vm1.selectedLibrary.options.transformers">
+                            <input class="with-gap" ng-model="vm1.transformers[transformer.id]" name="transformer"
+                                   type="radio" id="{{transformer.id}}" ng-click="vm1.onSelectTransformer(transformer.id)"/>
+                            <label for="{{transformer.id}}">{{transformer.name}}</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col s4">
+                <form ng-if="vm1.algoOptions">
+                    <p>Set Algorithm Options</p>
+                    <div class="col s4">
+                        <div class="col s12" ng-repeat="algorithmOptions in vm1.algoOptions">
+                            <label>{{algorithmOptions.name}}</label>
+                            <input name="algorithm" type="text" id="{{algorithmOptions.name}}" value="{{algorithmOptions.default}}"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
         <div class="row" ng-if="vm1.showRest">
-            <form class="col s12">
+            <md-divider></md-divider>
+            <br>
+            <h3>Upload Data</h3>
+            <br>
+            <div class="col s12">
+                <button type="button" class="btn btn-primary" ng-click="vm1.linkSC()"
+                        aria-expanded="false" aria-controls="selectWorkspace">
+                    Link SocioCortex workspace
+                </button>
+            </div>
+            <br><br>
+            <div class="col s12" ng-if="vm1.workspaces">
                 <div class="row">
-                    <p>Select Clustering Algorithm</p>
-                    <div class="col s4" ng-repeat="algorithm in vm1.selectedLibrary.options.algorithms">
-                        <input class="with-gap" ng-model="vm1.algorithms[algorithm.id]" name="algorithm" type="radio"
-                               id="{{algorithm.id}}" ng-click="vm1.onSelectAlgorithm(algorithm.id)"/>
-                        <label for="{{algorithm.id}}">{{algorithm.name}}</label>
+                    <form class="col s12">
+                        <div class="row">
+                            <input type="text" ng-model="vm1.fileName" id="fileName" ng-minlength=3 required/>
+                            <label for="fileName">Filename (with extension) :</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="row">
+                    <div id="selectWorkspace" class="row">
+                        <div class="col s12">
+                            <select ng-model="vm1.workspace" name="workspaceSelect" id="workspaceSelect"
+                                    ng-change="vm1.getPages()">
+                                <option ng-repeat="workspace in vm1.workspaces" value="{{workspace.id}}">
+                                    {{workspace.name}}
+                                </option>
+                            </select>
+                            <label for="workspaceSelect">Select a SocioCortex WorkSpace</label>
+                        </div>
+                        <div class="col s12">
+                            <div class="row">
+                                <div class="col s6">
+                                    <input type="checkbox" class="filled-in" id="typeCheckbox" checked="checked"
+                                           ng-model="vm1.typeCheckBox"/>
+                                    <label for="typeCheckbox">Select types</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-if="vm1.typeCheckBox">
+                            <div ng-if='vm1.workspace != "" && vm1.typeCheckBox'>
+                                <div class="row">
+                                    <div class="col s12"><b>Select Types</b></div>
+                                    <div class="col s3" ng-repeat="type in vm1.types">
+                                        <input type="checkbox" class="filled-in" id="{{type.id}}"
+                                               checklist-model="vm1.selectedTypes" checklist-value="type"
+                                               ng-click="vm1.updateSelection($index, entities)"
+                                               ng-change="vm1.getAttributes(type)"/>
+                                        <label for="{{type.id}}">{{type.name}}</label>
+                                    </div>
+                                    <br/>
+                                </div>
+                                <hr/>
+                                <div ng-if='vm1.selectedTypes.length == 1'>
+                                    <div class="row">
+                                        <div class="col s12"><b>Select attributes for mining</b></div>
+                                        <div class="col s3" ng-repeat="attribute in vm1.attributes">
+                                            <input type="checkbox" class="filled-in" id="{{attribute.id}}"
+                                                   checklist-model="vm1.selectedAttributesForMining"
+                                                   checklist-value="attribute"
+                                                   ng-click="vm1.updateSelection($index, entities)"
+                                                   ng-change="vm1.getAttributeValues(attribute.id)"/>
+                                            <label for="{{attribute.id}}">{{attribute.name}}</label>
+                                        </div>
+                                        <br/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div align="right">
+                            <button type="button" class="btn btn-default" ng-click="vm1.resetSCLink()">
+                                Close
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </form>
-        </div>
-        <div class="row" ng-if="vm1.showRest">
-            <form class="col s12">
-                <div class="row">
-                    <p>Select feature extractor</p>
-                    <div class="col s4" ng-repeat="transformer in vm1.selectedLibrary.options.transformers">
-                        <input class="with-gap" ng-model="vm1.transformers[transformer.id]" name="transformer"
-                               type="radio" id="{{transformer.id}}" ng-click="vm1.onSelectTransformer(transformer.id)"/>
-                        <label for="{{transformer.id}}">{{transformer.name}}</label>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
         <div class="row" ng-if="vm1.showRest">
             <div class="col s12">
-                <h3>Upload Data</h3>
+                <span><md-divider></md-divider></span>
             </div>
+        </div>
+        <div class="row" ng-if="vm1.showRest">
             <form class="col s12">
                 <div class="file-field input-field row">
                     <div class="btn">
@@ -65,7 +157,8 @@
             <form class="col s4">
                 <div class="row">
                     <button type="button" class="btn btn-primary light-blue darken-4"
-                            ng-if="vm1.showRest" ng-click="vm1.uploadDataSetFile()">Upload <i id="upload-icon" class="material-icons">autorenew</i>
+                            ng-if="vm1.showRest" ng-click="vm1.uploadDataSetFile()">Upload <i id="upload-icon"
+                                                                                              class="material-icons">autorenew</i>
                     </button>
                 </div>
             </form>

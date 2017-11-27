@@ -29,3 +29,10 @@
 .progress .indeterminate{
     background-color: #c0392b;
 }
+
+#workspaceSelect{
+    display: block;
+}
+#cluster-list{
+    margin-top: 0;
+}

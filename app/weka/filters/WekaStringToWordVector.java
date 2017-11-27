@@ -8,11 +8,11 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
  */
 public class WekaStringToWordVector {
     private StringToWordVector stw;
-    private boolean tf = true;
-    private boolean idf = true;
+    private boolean tf = false;
+    private boolean idf = false;
     private double periodicPruning = -1.0;
     private String attributeIndex = "first-last";
-    private int minTermFrequency = 5;
+    private int minTermFrequency = 1;
     private int wordsToKeep = 1000;
 
     public void setTf(boolean tf) {

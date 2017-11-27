@@ -1,5 +1,8 @@
 'use strict';
-
+$(document).ready(function() {
+    console.log("Select initializer called");
+    $('select').material_select();
+});
 angular.module('cApp', [
     'sociocortex',
     'ngRoute',

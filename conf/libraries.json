@@ -8,9 +8,10 @@
           {
             "name": "KMeans",
             "id": "spark-kmeans",
-            "options": {
-                "k": 20
-            }
+            "options": [{
+              "name": "K-value",
+              "default": 20
+            }]
           },
           {
             "name": "Bisecting-KMeans",
@@ -25,9 +26,10 @@
           {
             "name": "N-Gram",
             "id": "spark-n-gram",
-            "options":{
-              "n-value": 2
-            }
+            "options":[{
+              "name": "N-value",
+              "default": 2
+            }]
           }
         ],
         "transformers": [
@@ -49,7 +51,11 @@
         "algorithms": [
           {
             "name": "Simple KMeans",
-            "id": "weka-skm"
+            "id": "weka-skm",
+            "options": [{
+              "name": "K-value",
+              "default": 20
+            }]
           },
           {
             "name": "Hierarchial Clustered",

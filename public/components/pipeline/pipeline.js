@@ -92,33 +92,36 @@ pipelineApp.controller('RunPipelineCtrl', ['$http', '$location', function (pipel
     self.pipelines = pipelines;
 }]);
 
-pipelineApp.controller('ClusterPipelineCtrl', ['pipelines', 'libraries', '$http', '$location', function (pipelines, libraries, $http, $location) {
+pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'pipelines', 'libraries', '$http', '$location', function (scAuth, scData, scModel, pipelines, libraries, $http, $location) {
     var self = this;
+
     self.pipelines = pipelines;
     self.libraries = libraries;
     self.showRest = false;
     self.onLibrarySelect = function (id) {
         console.log(id);
         self.selectedLibrary = self.libraries[id - 1];
+        self.selectedAlgorithm = undefined;
+        self.algoOptions = undefined;
         self.showRest = true;
         console.log(self.selectedLibrary);
     };
-    var AnimateRotate = function (angle,repeat) {
-        var duration= 1000;
-        self.rotateNumber = setTimeout(function() {
-            if(repeat && repeat == "infinite") {
-                AnimateRotate(angle,repeat);
-            } else if ( repeat && repeat > 1) {
-                AnimateRotate(angle, repeat-1);
+    var AnimateRotate = function (angle, repeat) {
+        var duration = 1000;
+        self.rotateNumber = setTimeout(function () {
+            if (repeat && repeat === "infinite") {
+                AnimateRotate(angle, repeat);
+            } else if (repeat && repeat > 1) {
+                AnimateRotate(angle, repeat - 1);
             }
-        },duration);
+        }, duration);
         var $elem = $('#upload-icon');
 
         $({deg: 0}).animate({deg: angle}, {
             duration: duration,
-            step: function(now) {
+            step: function (now) {
                 $elem.css({
-                    'transform': 'rotate('+ now +'deg)'
+                    'transform': 'rotate(' + now + 'deg)'
                 });
             }
         });
@@ -130,16 +133,19 @@ pipelineApp.controller('ClusterPipelineCtrl', ['pipelines', 'libraries', '$http'
         };
     };
     self.onSelectAlgorithm = function (id) {
-        self.algorithm = {
-            id: id
-        }
+        self.algorithm = self.selectedLibrary.options.algorithms.filter(function(algorithm){
+            return algorithm.id === id;
+        })[0];
+        console.log(self.algorithm.options);
+        self.algoOptions = self.algorithm.options !== undefined ? self.algorithm.options : undefined;
+        console.log(self.algoOptions);
     };
     self.onFileChange = function (ele) {
         var files = ele.files;
         self.file = files[0];
     };
     self.uploadDataSetFile = function () {
-        AnimateRotate(360,"infinite");
+        AnimateRotate(360, "infinite");
         var fd = new FormData();
         fd.append("file", self.file);
         $http.post("/clustering/dataset/upload", fd, {
@@ -150,6 +156,60 @@ pipelineApp.controller('ClusterPipelineCtrl', ['pipelines', 'libraries', '$http'
             self.dataset = response.data.results.path;
             console.log(response);
         });
+    };
+
+    self.linkSC = function () {
+
+        scData.Workspace.query(function (workspaces) {
+            self.workspaces = workspaces;
+            console.log(self.workspaces);
+        });
+    };
+
+    self.getPages = function () {
+        self.pages = [];
+        self.attributeType = "Page";
+        console.log(self.workspace);
+        scData.Workspace.get({id: self.workspace}, function (workspace) {
+            scData.Entity.get({id: workspace.rootEntity.id}, function (entity) {
+                entity.children.forEach(function (subpage) {
+                    if (subpage.name.indexOf(".") < 0) {
+                        self.pages.push(subpage);
+                    }
+                });
+            });
+        });
+
+        self.types = [];
+        scData.Workspace.getEntityTypes({id: self.workspace}, function (types) {
+            self.types = types;
+            console.log(self.types);
+        });
+    };
+
+    self.getAttributes = function (type) {
+        self.attributes = [];
+        scModel.EntityType.getAttributeDefinitions({id: type.id}, function (attributes) {
+            self.attributes = attributes;
+        });
+    };
+
+    self.updateSelection = function (position, entities) {
+        angular.forEach(entities, function (subscription, index) {
+            if (position !== index)
+                subscription.checked = false;
+        });
+        console.log(self.selectedTypes);
+        console.log(self.selectedAttributesForMining);
+    };
+
+    self.resetSCLink = function () {
+        self.selectedAttributesForMining = undefined;
+        self.selectedTypes = undefined;
+        self.typeCheckBox = undefined;
+        self.types = undefined;
+        self.workspaces = undefined;
+        self.workspace = undefined;
     };
 
     self.createClusteringPipeline = function () {
@@ -272,7 +332,7 @@ pipelineApp.controller('ConfigurePipelineCtrl', ['scAuth', 'scData', 'scModel', 
         self.labelName = "";
         self.labelPath = "";
         self.createLabelFlag = false;
-    }
+    };
 
     self.createLabel = function () {
         if (self.labelName === undefined || self.labelName.length == 0) {
@@ -334,6 +394,7 @@ pipelineApp.controller('ConfigurePipelineCtrl', ['scAuth', 'scData', 'scModel', 
     };
 
     self.linkSC = function () {
+        $('#sc-modal').modal('open');
         scData.Workspace.query(function (workspaces) {
             self.workspaces = workspaces;
         });

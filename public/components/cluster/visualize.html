@@ -1,14 +1,22 @@
-<div class="container" >
+<div class="container">
     <div class="row">
         <div ng-if="vm2.pipelines.length > 0">
             <h1>Select a pipeline</h1>
-            <table class="table">
+            <table class="table striped bordered">
+                <thead>
                 <tr>
                     <th>Pipeline name</th>
+                    <th>Algorithm</th>
+                    <th>Tranformer</th>
                 </tr>
-                <tr ng-repeat="pipeline in vm2.pipelines">
-                    <td><a href="/clustering/clusters/{{pipeline.name}}">{{pipeline.name}}</a></td>
-                </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="pipeline in vm2.pipelines">
+                        <td><a href="/clustering/clusters/{{pipeline.name}}" ng-click="vm2.onVisualize()">{{pipeline.name}}</a></td>
+                        <td>{{pipeline.algorithm}}</td>
+                        <td>{{pipeline.transformer}}</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>
