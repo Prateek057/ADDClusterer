@@ -133,13 +133,22 @@ pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
         };
     };
     self.onSelectAlgorithm = function (id) {
-        self.algorithm = self.selectedLibrary.options.algorithms.filter(function(algorithm){
+        self.algorithm = self.selectedLibrary.options.algorithms.filter(function (algorithm) {
             return algorithm.id === id;
         })[0];
         console.log(self.algorithm.options);
         self.algoOptions = self.algorithm.options !== undefined ? self.algorithm.options : undefined;
         console.log(self.algoOptions);
     };
+
+    self.onAlgoOptionsChange = function(algoOptionName){
+        var algoOption = self.algoOptions.filter(function(algoOptions){
+            return algoOptions.name === algoOptionName;
+        })[0].set("value", $('#'+ algoOptionName).value());
+        console.log(algoOption);
+        console.log(self.algoOptions);
+    };
+
     self.onFileChange = function (ele) {
         var files = ele.files;
         self.file = files[0];
@@ -210,6 +219,7 @@ pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
         self.types = undefined;
         self.workspaces = undefined;
         self.workspace = undefined;
+        self.scFileName = undefined;
     };
 
     self.createClusteringPipeline = function () {
@@ -227,6 +237,10 @@ pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
         $("#progress").css({
             "visibility": "visible"
         });
+        if(self.scFileName){
+            self.dataset = self.scFileName;
+        }
+        self.algorithm.options = self.algoOptions;
         var data = {
             pipeline: {
                 href: request_url,
@@ -235,12 +249,18 @@ pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
                     name: self.selectedLibrary.name,
                     id: self.selectedLibrary.id
                 },
+                scData: {
+                    filename: self.scFileName,
+                    types: self.selectedTypes,
+                    miningAttributes: self.selectedAttributesForMining
+                },
                 dataset: self.dataset,
                 algorithm: self.algorithm,
                 preprocessors: self.preprocessors,
                 transformer: self.transformer
             }
         };
+        console.log(data);
         $http.post("/clustering/pipeline/create", data)
             .then(function (response) {
                 Materialize.toast('Pipeline Create!', 4000);

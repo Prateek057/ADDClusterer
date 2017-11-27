@@ -10,7 +10,10 @@
             "id": "spark-kmeans",
             "options": [{
               "name": "K-value",
-              "default": 20
+              "value": 20
+            },{
+              "name": "iterations",
+              "value": 10
             }]
           },
           {
@@ -28,7 +31,7 @@
             "id": "spark-n-gram",
             "options":[{
               "name": "N-value",
-              "default": 2
+              "value": 2
             }]
           }
         ],
@@ -54,7 +57,7 @@
             "id": "weka-skm",
             "options": [{
               "name": "K-value",
-              "default": 20
+              "value": 20
             }]
           },
           {

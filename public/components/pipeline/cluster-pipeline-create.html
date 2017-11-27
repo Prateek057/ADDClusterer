@@ -46,10 +46,10 @@
             <div class="col s4">
                 <form ng-if="vm1.algoOptions">
                     <p>Set Algorithm Options</p>
-                    <div class="col s4">
-                        <div class="col s12" ng-repeat="algorithmOptions in vm1.algoOptions">
-                            <label>{{algorithmOptions.name}}</label>
-                            <input name="algorithm" type="text" id="{{algorithmOptions.name}}" value="{{algorithmOptions.default}}"/>
+                    <div class="col s12">
+                        <div class="row" ng-repeat="algorithmOptions in vm1.algoOptions">
+                            <input name="algorithm" ng-model="vm1.algoOptions[$index].value" value="{{vm1.algoOptions[$index].value}}" type="text" id="{{algorithmOptions.name}}"/>
+                            <label for="{{algorithmOptions.name}}">{{algorithmOptions.name}}</label>
                         </div>
                     </div>
                 </form>
@@ -71,8 +71,8 @@
                 <div class="row">
                     <form class="col s12">
                         <div class="row">
-                            <input type="text" ng-model="vm1.fileName" id="fileName" ng-minlength=3 required/>
-                            <label for="fileName">Filename (with extension) :</label>
+                            <input type="text" ng-model="vm1.scFileName" id="scFileName" ng-minlength=3 required/>
+                            <label for="scFileName">Filename (with extension):</label>
                         </div>
                     </form>
                 </div>

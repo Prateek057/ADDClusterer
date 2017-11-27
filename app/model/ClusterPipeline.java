@@ -5,6 +5,7 @@ import org.mongodb.morphia.annotations.*;
 
 import java.util.ArrayList;
 
+
 @Entity("cluster-pipelines")
 public class ClusterPipeline  extends PersistentEntity{
 
@@ -19,7 +20,7 @@ public class ClusterPipeline  extends PersistentEntity{
     private String name;
 
     private String library;
-    private String algorithm;
+    private Algorithm algorithm;
     private ArrayList<String> preprocessors;
     private String transformer;
     private String dataset;
@@ -28,7 +29,7 @@ public class ClusterPipeline  extends PersistentEntity{
 
     }
 
-    public ClusterPipeline(String href, String name, String library, String algorithm, String transformer, String dataset){
+    public ClusterPipeline(String href, String name, String library, Algorithm algorithm, String transformer, String dataset){
         this.name = name;
         this.href = href;
         this.library = library;
@@ -37,7 +38,7 @@ public class ClusterPipeline  extends PersistentEntity{
         this.dataset = dataset;
     }
 
-    public ClusterPipeline(String href, String name, String library, String algorithm, String transformer, String dataset, ArrayList<String> preprocessors){
+    public ClusterPipeline(String href, String name, String library, Algorithm algorithm, String transformer, String dataset, ArrayList<String> preprocessors){
         this.name = name;
         this.href = href;
         this.library = library;
@@ -71,11 +72,11 @@ public class ClusterPipeline  extends PersistentEntity{
         this.library = library;
     }
 
-    public String getAlgorithm() {
+    public Algorithm getAlgorithm() {
         return algorithm;
     }
 
-    public void setAlgorithm(String algorithm) {
+    public void setAlgorithm(Algorithm algorithm) {
         this.algorithm = algorithm;
     }
 
