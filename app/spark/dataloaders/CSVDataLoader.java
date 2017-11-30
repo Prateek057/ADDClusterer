@@ -9,14 +9,15 @@ import java.io.File;
 
 public class CSVDataLoader implements ISparkDataLoader {
     private SparkSessionComponent sparkSessionComponent;
-    public CSVDataLoader(){
+
+    public CSVDataLoader() {
         sparkSessionComponent = SparkSessionComponent.getSparkSessionComponent();
     }
 
     public Dataset<Row> loadData(String path) {
         SparkSession spark = sparkSessionComponent.getSparkSession();
+        System.out.println(path);
         File csvFile = new File(path);
-        String absolutePath = csvFile.getAbsolutePath();
-        return spark.read().csv(absolutePath);
+        return spark.read().csv(path);
     }
 }

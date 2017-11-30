@@ -45,6 +45,16 @@ clusterPipelineApp.config(['$routeProvider', function ($routeProvider) {
                 }
             }
         })
+        .when('/clusterDocuments', {
+            templateUrl: '/assets/components/classify/classify.html',
+            controller: 'ClusterClassifyCtrl',
+            controllerAs: 'vm',
+            resolve: {
+                pipelines: function (ClusterPipelineDataService) {
+                    return ClusterPipelineDataService.getAllPipelines();
+                }
+            }
+        })
         .when('/clustering/clusters/:pipelineName', {
             templateUrl: '/assets/components/cluster/table.html',
             controller: 'VisualizePipelineClustersCtrl',
@@ -61,7 +71,7 @@ clusterPipelineApp.controller('VisualizePipelineCtrl', ['pipelines', '$http', '$
     var self = this;
     console.log(pipelines);
     self.pipelines = pipelines;
-    self.onVisualize = function(){
+    self.onVisualize = function () {
         console.log("called");
         $("#progress").css({
             "visibility": "visible"
@@ -74,4 +84,33 @@ clusterPipelineApp.controller('VisualizePipelineClustersCtrl', ['clusters', '$ht
     var self = this;
     self.clusters = clusters.cluster_table;
     self.member_count = clusters.member_count;
+}]);
+
+classifyApp.controller('ClusterClassifyCtrl', ['pipelines', '$http', function (pipelines, $http) {
+    var self = this;
+    self.pipelines = pipelines;
+}]);
+
+classifyApp.controller('ExecutePipelineCtrl', ['scAuth', 'scData', 'scModel', 'pipeline', '$http', '$q', function (scAuth, scData, scModel, pipeline, $http, $q) {
+    var self = this;
+    self.pipeline = JSON.parse(pipeline.result);
+    self.showResults = false;
+    self.textToClassify = "";
+    self.isPredicting = false;
+
+    self.classifyDocuments = function () {
+        if (self.textToClassify === "") {
+            self.message = "Please provide the text to classify!"
+        } else {
+            self.isPredicting = true;
+            var data = {};
+            data.pipelineName = self.pipeline.name;
+            data.textToClassify = self.textToClassify;
+            $http.post('/pipeline/predict', data).then(function (response) {
+                self.result = response.data.result;
+                self.showResults = true;
+                self.isPredicting = false;
+            });
+        }
+    };
 }]);

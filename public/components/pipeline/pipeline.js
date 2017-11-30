@@ -98,13 +98,16 @@ pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
     self.pipelines = pipelines;
     self.libraries = libraries;
     self.showRest = false;
+    self.transformers = undefined;
+    self.algorithms = undefined;
+    self.workspace = undefined;
+    self.selectedType = undefined;
+
     self.onLibrarySelect = function (id) {
-        console.log(id);
         self.selectedLibrary = self.libraries[id - 1];
         self.selectedAlgorithm = undefined;
         self.algoOptions = undefined;
         self.showRest = true;
-        console.log(self.selectedLibrary);
     };
     var AnimateRotate = function (angle, repeat) {
         var duration = 1000;
@@ -132,21 +135,19 @@ pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
             id: id
         };
     };
+
     self.onSelectAlgorithm = function (id) {
         self.algorithm = self.selectedLibrary.options.algorithms.filter(function (algorithm) {
             return algorithm.id === id;
         })[0];
-        console.log(self.algorithm.options);
         self.algoOptions = self.algorithm.options !== undefined ? self.algorithm.options : undefined;
-        console.log(self.algoOptions);
     };
 
-    self.onAlgoOptionsChange = function(algoOptionName){
-        var algoOption = self.algoOptions.filter(function(algoOptions){
+    self.onAlgoOptionsChange = function (algoOptionName) {
+        self.algoOptions.filter(function (algoOptions) {
             return algoOptions.name === algoOptionName;
-        })[0].set("value", $('#'+ algoOptionName).value());
-        console.log(algoOption);
-        console.log(self.algoOptions);
+        })[0].set("value", $('#' + algoOptionName).value());
+        self.algorithm.options = self.algoOptions;
     };
 
     self.onFileChange = function (ele) {
@@ -163,22 +164,18 @@ pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
             clearTimeout(self.rotateNumber);
             Materialize.toast('File Uploaded!', 5000, "bottom");
             self.dataset = response.data.results.path;
-            console.log(response);
         });
     };
 
     self.linkSC = function () {
-
         scData.Workspace.query(function (workspaces) {
             self.workspaces = workspaces;
-            console.log(self.workspaces);
         });
     };
 
     self.getPages = function () {
         self.pages = [];
         self.attributeType = "Page";
-        console.log(self.workspace);
         scData.Workspace.get({id: self.workspace}, function (workspace) {
             scData.Entity.get({id: workspace.rootEntity.id}, function (entity) {
                 entity.children.forEach(function (subpage) {
@@ -188,33 +185,31 @@ pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
                 });
             });
         });
-
         self.types = [];
         scData.Workspace.getEntityTypes({id: self.workspace}, function (types) {
             self.types = types;
-            console.log(self.types);
         });
     };
 
     self.getAttributes = function (type) {
         self.attributes = [];
+        self.selectedType = type;
         scModel.EntityType.getAttributeDefinitions({id: type.id}, function (attributes) {
             self.attributes = attributes;
         });
     };
+
 
     self.updateSelection = function (position, entities) {
         angular.forEach(entities, function (subscription, index) {
             if (position !== index)
                 subscription.checked = false;
         });
-        console.log(self.selectedTypes);
-        console.log(self.selectedAttributesForMining);
     };
 
     self.resetSCLink = function () {
         self.selectedAttributesForMining = undefined;
-        self.selectedTypes = undefined;
+        self.selectedType = undefined;
         self.typeCheckBox = undefined;
         self.types = undefined;
         self.workspaces = undefined;
@@ -237,10 +232,16 @@ pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
         $("#progress").css({
             "visibility": "visible"
         });
-        if(self.scFileName){
+        if (self.scFileName) {
             self.dataset = self.scFileName;
         }
         self.algorithm.options = self.algoOptions;
+        var miningAttr = [];
+        if (self.selectedAttributesForMining)
+            self.selectedAttributesForMining.forEach(function (attr) {
+                miningAttr.push(attr.name);
+            });
+
         var data = {
             pipeline: {
                 href: request_url,
@@ -249,10 +250,11 @@ pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
                     name: self.selectedLibrary.name,
                     id: self.selectedLibrary.id
                 },
+                scLink: !!self.selectedType,
                 scData: {
                     filename: self.scFileName,
-                    types: self.selectedTypes,
-                    miningAttributes: self.selectedAttributesForMining
+                    type: self.selectedType,
+                    miningAttributes: miningAttr
                 },
                 dataset: self.dataset,
                 algorithm: self.algorithm,

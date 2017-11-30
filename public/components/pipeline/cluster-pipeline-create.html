@@ -15,7 +15,7 @@
                 <form>
                     <div class="row">
                         <p>Select Library</p>
-                        <div class="col s4" ng-repeat="library in vm1.libraries">
+                        <div class="col s4" ng-repeat="library in vm1.libraries" ng-if="library.enable">
                             <input class="with-gap" name="library" type="radio" id="{{library.id}}"
                                    ng-click="vm1.onLibrarySelect(library.id);"/>
                             <label for="{{library.id}}">{{library.name}}</label>
@@ -26,7 +26,8 @@
                     <div class="row">
                         <p>Select Clustering Algorithm</p>
                         <div class="col s4" ng-repeat="algorithm in vm1.selectedLibrary.options.algorithms">
-                            <input class="with-gap" ng-model="vm1.algorithms[algorithm.id]" name="algorithm" type="radio"
+                            <input class="with-gap" ng-model="vm1.algorithms[algorithm.id]" name="algorithm"
+                                   type="radio"
                                    id="{{algorithm.id}}" ng-click="vm1.onSelectAlgorithm(algorithm.id)"/>
                             <label for="{{algorithm.id}}">{{algorithm.name}}</label>
                         </div>
@@ -37,7 +38,8 @@
                         <p>Select feature extractor</p>
                         <div class="col s4" ng-repeat="transformer in vm1.selectedLibrary.options.transformers">
                             <input class="with-gap" ng-model="vm1.transformers[transformer.id]" name="transformer"
-                                   type="radio" id="{{transformer.id}}" ng-click="vm1.onSelectTransformer(transformer.id)"/>
+                                   type="radio" id="{{transformer.id}}"
+                                   ng-click="vm1.onSelectTransformer(transformer.id)"/>
                             <label for="{{transformer.id}}">{{transformer.name}}</label>
                         </div>
                     </div>
@@ -48,7 +50,9 @@
                     <p>Set Algorithm Options</p>
                     <div class="col s12">
                         <div class="row" ng-repeat="algorithmOptions in vm1.algoOptions">
-                            <input name="algorithm" ng-model="vm1.algoOptions[$index].value" value="{{vm1.algoOptions[$index].value}}" type="text" id="{{algorithmOptions.name}}"/>
+                            <input name="algorithm" ng-model="vm1.algoOptions[$index].value"
+                                   value="{{vm1.algoOptions[$index].value}}" type="text"
+                                   id="{{algorithmOptions.name}}"/>
                             <label for="{{algorithmOptions.name}}">{{algorithmOptions.name}}</label>
                         </div>
                     </div>
@@ -87,32 +91,25 @@
                             </select>
                             <label for="workspaceSelect">Select a SocioCortex WorkSpace</label>
                         </div>
-                        <div class="col s12">
-                            <div class="row">
-                                <div class="col s6">
-                                    <input type="checkbox" class="filled-in" id="typeCheckbox" checked="checked"
-                                           ng-model="vm1.typeCheckBox"/>
-                                    <label for="typeCheckbox">Select types</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div ng-if="vm1.typeCheckBox">
-                            <div ng-if='vm1.workspace != "" && vm1.typeCheckBox'>
+                        <br><hr/><br>
+                        <div>
+                            <div ng-if='vm1.workspace'>
                                 <div class="row">
                                     <div class="col s12"><b>Select Types</b></div>
                                     <div class="col s3" ng-repeat="type in vm1.types">
-                                        <input type="checkbox" class="filled-in" id="{{type.id}}"
-                                               checklist-model="vm1.selectedTypes" checklist-value="type"
+                                        <input type="radio" class="with-gap" name="type" id="{{type.id}}"
+                                               value="{{type.id}}"
+                                               ng-model="vm1.selectedType.id"
                                                ng-click="vm1.updateSelection($index, entities)"
                                                ng-change="vm1.getAttributes(type)"/>
-                                        <label for="{{type.id}}">{{type.name}}</label>
+                                        <label for="{{type.id}}"><b>{{type.name}}</b></label>
                                     </div>
                                     <br/>
                                 </div>
                                 <hr/>
-                                <div ng-if='vm1.selectedTypes.length == 1'>
+                                <div ng-if='vm1.selectedType'>
                                     <div class="row">
-                                        <div class="col s12"><b>Select attributes for mining</b></div>
+                                        <div class="col s12"><b>Select text attributes for mining</b></div>
                                         <div class="col s3" ng-repeat="attribute in vm1.attributes">
                                             <input type="checkbox" class="filled-in" id="{{attribute.id}}"
                                                    checklist-model="vm1.selectedAttributesForMining"

@@ -1,31 +1,39 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import model.PersistentEntity;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import play.Logger;
 import play.libs.Json;
+import play.libs.ws.WSClient;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import services.HelperService;
 import services.PipelineService;
 import spark.clusterers.BaseClusterPipeline;
 import spark.dataloaders.CSVDataLoader;
 import spark.pipelines.SparkPipelineFactory;
 import util.StaticFunctions;
 
+import javax.inject.Inject;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import static java.lang.Integer.parseInt;
+import static spark.utils.FileUtil.jsonToCSVConverter;
+import static spark.utils.FileUtil.saveDataAsCSV;
 import static spark.utils.SparkDatasetUtil.clusterTableToJson;
 import static spark.utils.SparkDatasetUtil.datasetToJson;
 import static spark.utils.SparkDatasetUtil.extractClusterTablefromDataset;
 
 public class ClusterController extends Controller {
 
-
-
+    @Inject
+    WSClient ws;
 
     public static JsonNode getSortedClusterResults(Dataset<Row> dataset) {
         Dataset<Row> sortedResults = dataset.sort("cluster_label");
@@ -87,33 +95,51 @@ public class ClusterController extends Controller {
             String newPath = "myresources/datasets/"+fileName;
             file.renameTo(new File(newPath));
             return ok(Json.parse("{ \"results\": { \"path\": \""+newPath+ " \"}}"));
-
         } else{
             return ok();
         }
     }
     public Result createClusterPipeline(){
         JsonNode data = request().body().asJson().get("pipeline");
-        System.out.print(data);
-        JsonNode results = Json.toJson(Json.parse("{}"));
-        switch(parseInt(data.get("library").get("id").toString())){
-            case 1: {
-                SparkPipelineFactory sparkPipelineFactory = new SparkPipelineFactory(data);
-                String path = "myresources/datasets/tasksNoHeader.csv";
-                Dataset<Row> spark_results = sparkPipelineFactory.trainPipeline(data.get("name").toString(), path, "csv");
-                results = Json.toJson(datasetToJson(extractClusterTablefromDataset(spark_results)));
+        String filepath = data.get("dataset").asText();
+        Logger.info(data.get("scLink").asText());
+        if(data.get("scLink").asBoolean()){
+            String filename = data.get("scData").get("filename").asText();
+            filepath = "myresources/datasets/"+filename;
+            String scTypeURL = data.get("scData").get("type").get("href").asText();
+            ArrayNode attributesToMine = (ArrayNode) data.get("scData").get("miningAttributes");
+            List<String> miningAttributes = new ArrayList<>();
+            for(JsonNode attribute: attributesToMine){
+                miningAttributes.add(attribute.asText());
             }
-            break;
+
+            HelperService hs = new HelperService(this.ws);
+            ArrayNode scData = hs.getSCData(scTypeURL, miningAttributes);
+            StringBuilder records = jsonToCSVConverter(scData, miningAttributes);
+            try {
+                saveDataAsCSV(filepath, records);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            //return ok(Json.toJson(hs.getSCData(scTypeURL,miningAttributes)));
+        }
+        JsonNode results = Json.toJson(Json.parse("{}"));
+
+        switch(parseInt(data.get("library").get("id").toString())){
             case 2:{
+                Logger.info("....WEKA.....");
                 //Do Nothing : In Progress
             }
             break;
-            default: {
+            case 1:
+            default:
+            {
+                Logger.info("....Spark.....");
                 SparkPipelineFactory sparkPipelineFactory = new SparkPipelineFactory(data);
-                String path = data.get("dataset").asText();
-                Dataset<Row> spark_results = sparkPipelineFactory.trainPipeline(data.get("name").toString(), path, "csv");
-                results = datasetToJson(extractClusterTablefromDataset(spark_results));
+                Dataset<Row> spark_results = sparkPipelineFactory.trainPipeline(data.get("name").toString(), filepath, "csv");
+                results = Json.toJson(datasetToJson(extractClusterTablefromDataset(spark_results)));
             }
+            break;
         }
         JsonNode json_results = Json.toJson(Json.parse("{}"));
         return ok(((ObjectNode)json_results).set("results", results));

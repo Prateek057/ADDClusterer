@@ -1,13 +1,24 @@
 package services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.Configuration;
+import play.Logger;
 import play.libs.Json;
 import play.libs.ws.WSAuthScheme;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
+
+import static play.mvc.Results.ok;
+import static util.StaticFunctions.getStringValueFromSCObject;
 
 public class HelperService {
     WSClient ws;
@@ -49,5 +60,33 @@ public class HelperService {
         String url = SC_BASE_URL + "workspaces/" + workspaceId + "/mxlQuery";
         JsonNode json = Json.newObject().put("expression", expression);
         return postWSRequest(url, json);
+    }
+
+    public ArrayNode getSCData(String type_url, List<String> miningAttributes) {
+        Map map = new HashMap();
+        ArrayNode entityArray = new ArrayNode(new JsonNodeFactory(false));
+        miningAttributes.forEach(attribute -> map.put(attribute, new ArrayList<String>()));
+        Logger.info("Begin getting data from SC");
+        HelperService hs = new HelperService(ws);
+        hs.entitiesForPath(type_url + "/entities").thenApply(entityObject -> {
+            entityObject.forEach(entity -> {
+                this.entityForUid(entity.get("id").asText()).thenApply(e -> {
+                    JsonNode entityAttributes = e.get("attributes");
+                    ObjectNode entityAttributePairs = new ObjectNode(new JsonNodeFactory(false));
+                    for (String miningAttribute : miningAttributes) {
+                        String text = "";
+                        String textValue = getStringValueFromSCObject(entityAttributes, miningAttribute);
+                        if (textValue != null) text = text.concat("," + textValue);
+                        if (text != "") ((ArrayList) map.get(miningAttribute)).add(text.replaceAll("class", ""));
+                        entityAttributePairs.set(miningAttribute, Json.toJson(text));
+                    }
+                    entityArray.add(entityAttributePairs);
+                    return ok();
+                }).toCompletableFuture().join();
+            });
+            return ok();
+        }).toCompletableFuture().join();
+        Logger.info("Completed getting data from SC");
+        return entityArray;
     }
 }

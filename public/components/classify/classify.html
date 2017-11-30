@@ -2,17 +2,29 @@
     <div class="row">
         <div ng-if="vm.pipelines.length > 0">
             <h1>Select a pipeline</h1>
-            <table class="table">
+            <table class="table striped bordered">
+                <thead>
                 <tr>
                     <th>Pipeline name</th>
-                    <th>Created at</th>
-                    <th>Model path</th>
+                    <th>Algorithm</th>
+                    <th>Options</th>
+                    <th>Tranformer</th>
+                    <th>Dataset</th>
+                    <th>SC Type</th>
+                    <th>Mined Attributes</th>
                 </tr>
+                </thead>
+                <tbody>
                 <tr ng-repeat="pipeline in vm.pipelines">
-                    <td><a href="/executePipeline/{{pipeline.name}}">{{pipeline.name}}</a></td>
-                    <td>{{pipeline.createdAt.$date | date: 'yyyy-MM-dd HH:mm'}}</td>
-                    <td>{{pipeline.modelPath}}</td>
+                    <td><a href="/clustering/executePipeline/{{pipeline.name}}" ng-click="vm.onVisualize()">{{pipeline.name}}</a></td>
+                    <td>{{pipeline.algorithm.name}}</td>
+                    <td><span ng-repeat="option in pipeline.algorithm.options"><b>{{option.name}}</b>:{{option.value}}<br></span></td>
+                    <td>{{pipeline.transformer}}</td>
+                    <td>{{pipeline.dataset}}</td>
+                    <td>{{pipeline.type.name}}</td>
+                    <td><span ng-repeat="attribute in pipeline.miningAttributes"><b>{{attribute}}</b><br></span></td>
                 </tr>
+                </tbody>
             </table>
         </div>
     </div>

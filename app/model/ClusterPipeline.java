@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity("cluster-pipelines")
@@ -24,6 +25,8 @@ public class ClusterPipeline  extends PersistentEntity{
     private ArrayList<String> preprocessors;
     private String transformer;
     private String dataset;
+    private SCTypeEntity type;
+    private List<String> miningAttributes;
 
     public ClusterPipeline(){
 
@@ -36,6 +39,17 @@ public class ClusterPipeline  extends PersistentEntity{
         this.algorithm = algorithm;
         this.transformer = transformer;
         this.dataset = dataset;
+    }
+
+    public ClusterPipeline(String href, String name, String library, Algorithm algorithm, String transformer, String dataset, SCTypeEntity type, List<String> miningAttributes){
+        this.name = name;
+        this.href = href;
+        this.library = library;
+        this.algorithm = algorithm;
+        this.transformer = transformer;
+        this.dataset = dataset;
+        this.type = type;
+        this.miningAttributes = miningAttributes;
     }
 
     public ClusterPipeline(String href, String name, String library, Algorithm algorithm, String transformer, String dataset, ArrayList<String> preprocessors){
@@ -102,5 +116,21 @@ public class ClusterPipeline  extends PersistentEntity{
 
     public void setDataset(String dataset) {
         this.dataset = dataset;
+    }
+
+    public SCTypeEntity getType() {
+        return type;
+    }
+
+    public void setType(SCTypeEntity type) {
+        this.type = type;
+    }
+
+    public List<String> getMiningAttributes() {
+        return miningAttributes;
+    }
+
+    public void setMiningAttributes(List<String> miningAttributes) {
+        this.miningAttributes = miningAttributes;
     }
 }

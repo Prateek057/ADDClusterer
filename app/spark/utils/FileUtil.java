@@ -1,5 +1,10 @@
 package spark.utils;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import play.Logger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
@@ -27,26 +32,40 @@ public class FileUtil {
         return filenames;
     }
 
-    public static String constructCSVLineRecord(List<String> columnValues, String separator){
+    public static String constructCSVLineRecord(List<String> columnValues, String separator) {
         StringBuilder sb = new StringBuilder();
-        for(String column: columnValues){
+        for (String column : columnValues) {
             sb.append(column);
-            if(columnValues.indexOf(column) == columnValues.size()-1){
+            if (columnValues.indexOf(column) == columnValues.size() - 1) {
                 sb.append("\n");
-            }
-            else{
+            } else {
                 sb.append(separator);
             }
         }
         return sb.toString();
     }
 
-    public static String constructCSVRecords(List<String> rowValues){
+    public static String constructCSVRecords(List<String> rowValues) {
         StringBuilder sb = new StringBuilder();
-        for(String row: rowValues){
+        for (String row : rowValues) {
             sb.append(row);
         }
         return sb.toString();
+    }
+
+    public static StringBuilder jsonToCSVConverter(ArrayNode jsonData, List<String> attributes) {
+        StringBuilder sb = new StringBuilder();
+        for (JsonNode jsonObject : jsonData) {
+            if(jsonObject.isArray()) Logger.info("One of columns was found to be an Array and was ignored");
+            for(int i=0; i<attributes.size(); i++){
+                String attributeName = attributes.get(i);
+                String attributeValue = jsonObject.get(attributeName).asText();
+               if(!attributeValue.equals("")) sb.append(attributeValue);
+                sb.append(",");
+            }
+            sb.append("\n");
+        }
+        return sb;
     }
 
     public static File saveDataAsCSV(String path, StringBuilder content) throws FileNotFoundException {

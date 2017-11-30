@@ -24,7 +24,7 @@ public class StaticFunctions {
     public static final Set<String> STOPWORDS_SET = new HashSet<String>(Arrays.asList(STOPWORDS));
 
     public static boolean tagValuesMatch(JsonNode entityAttributes, String tag, Label label) {
-        if(entityAttributes == null) return false;
+        if (entityAttributes == null) return false;
         for (int j = 0; j < entityAttributes.size(); j++) {
             JsonNode entityAttribute = entityAttributes.get(j);
             if (entityAttribute.get("name").asText("").equals(tag)) {
@@ -43,16 +43,16 @@ public class StaticFunctions {
     }
 
     public static String getStringValueFromSCObject(JsonNode entityAttributes, String attributeName) {
-        for (int j = 0; j < entityAttributes.size(); j++) {
-            JsonNode attr = entityAttributes.get(j);
-            if (attr.get("name").asText("").equals(attributeName)) {
-                JsonNode jsonValue = attr.get("values");
-                if (jsonValue.size() > 0) {
-                    return jsonValue.get(0).asText("");
+        if (entityAttributes != null)
+            for (int j = 0; j < entityAttributes.size(); j++) {
+                JsonNode attr = entityAttributes.get(j);
+                if (attr.get("name").asText("").equals(attributeName)) {
+                    JsonNode jsonValue = attr.get("values");
+                    if (jsonValue.size() > 0) {
+                        return jsonValue.get(0).asText("");
+                    }
                 }
             }
-        }
-
         return null;
     }
 

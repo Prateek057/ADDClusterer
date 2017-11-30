@@ -3,6 +3,7 @@
     {
       "name": "Apache Spark",
       "id": 1,
+      "enable": true,
       "options": {
         "algorithms": [
           {
@@ -50,6 +51,7 @@
     {
       "name": "WEKA",
       "id": 2,
+      "enable": false,
       "options": {
         "algorithms": [
           {

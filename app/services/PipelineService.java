@@ -3,10 +3,7 @@ package services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import model.Algorithm;
-import model.ClusterPipeline;
-import model.Option;
-import model.PersistentEntity;
+import model.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
@@ -33,8 +30,6 @@ public class PipelineService {
         SparkSessionComponent sparkSessionComponent = SparkSessionComponent.getSparkSessionComponent();
         SparkSession spark = sparkSessionComponent.getSparkSession();
         return spark.read().json("myresources/results/" + pipelineName);
-        //SQLContext sqlContext = sparkSessionComponent.getSqlContext();
-        //return sqlContext.sql("select * from default."+pipelineName);
     }
 
     public static void saveClusterPipelineSettings(JsonNode settings){
@@ -46,7 +41,7 @@ public class PipelineService {
             optionObject.setName(option.get("name").asText());
             optionObject.setValue(option.get("value").asInt());
             options.add(optionObject);
-        };
+        }
         Algorithm algorithm = new Algorithm();
         algorithm.setId(algorithm_settings.get("id").asText());
         algorithm.setName(algorithm_settings.get("name").asText());
@@ -61,6 +56,23 @@ public class PipelineService {
                 //getPreprocessorList(settings.get("preprocessors"))
                 );
         System.out.print(clusterPipeline);
+        if(settings.get("scLink").asBoolean()){
+            JsonNode scData = settings.get("scData");
+            ArrayNode miningAtts = (ArrayNode) scData.get("miningAttributes");
+            List<String> miningAttributes = new ArrayList<>();
+            for(JsonNode att: miningAtts)
+                miningAttributes.add(att.asText());
+            clusterPipeline.setMiningAttributes(miningAttributes);
+
+            SCTypeEntity type = new SCTypeEntity();
+            JsonNode typeJson = scData.get("type");
+            type.setHref(typeJson.get("href").asText());
+            type.setId(typeJson.get("id").asText());
+            type.setName(typeJson.get("name").asText());
+
+            clusterPipeline.setType(type);
+
+        }
         clusterPipeline.save();
     }
 

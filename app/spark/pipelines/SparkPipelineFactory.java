@@ -1,6 +1,7 @@
 package spark.pipelines;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
@@ -15,6 +16,7 @@ import spark.dataloaders.ISparkDataLoader;
 
 import java.io.IOException;
 
+import static java.lang.Integer.parseInt;
 import static services.PipelineService.saveClusterPipelineSettings;
 import static spark.preprocessing.SparkCommonPreprocessor.commonPreprocess;
 import static spark.utils.SparkStringColumnUtil.addIDColumn;
@@ -41,12 +43,13 @@ public class SparkPipelineFactory {
         this.pipelineName = pipelineName.replaceAll("\"", "");
     }
 
-    private void loadData(String type, String path){
+    private void loadData(String type, String path) {
+        System.out.println(path);
         ISparkDataLoader dataLoader = dataLoaderFactory.getDataLoader(type);
         dataSet = dataLoader.loadData(path);
     }
 
-    public SparkPipelineFactory(JsonNode settings){
+    public SparkPipelineFactory(JsonNode settings) {
         dataLoaderFactory = new DataLoaderFactory();
         initPipelineStages();
         saveClusterPipelineSettings(settings);
@@ -54,8 +57,7 @@ public class SparkPipelineFactory {
         pipeline = new Pipeline().setStages(pipelineStages);
     }
 
-
-    private void initPipelineStages(){
+    private void initPipelineStages() {
         tokenizer = new Tokenizer()
                 .setInputCol("document")
                 .setOutputCol("words");
@@ -87,7 +89,7 @@ public class SparkPipelineFactory {
                 .setPredictionCol("cluster_label")
                 .setMaxIter(20);
 
-        bisectingKMeans = new BisectingKMeans() .setK(20)
+        bisectingKMeans = new BisectingKMeans().setK(20)
                 .setFeaturesCol("features")
                 .setPredictionCol("cluster_label")
                 .setMaxIter(20);
@@ -95,10 +97,17 @@ public class SparkPipelineFactory {
     }
 
     private void setPipelineStages(JsonNode settings) {
-        switch (settings.get("algorithm").get("id").toString()){
+        JsonNode algorithm = settings.get("algorithm");
+        System.out.println(algorithm.get("id").asText());
+        switch (settings.get("algorithm").get("id").asText()) {
             case "spark-kmeans":
-                switch(settings.get("transformer").get("id").toString()){
+                System.out.println(".....Spark KMeans.......");
+                ArrayNode kmeansOptions = (ArrayNode) algorithm.get("options");
+                setKMeansOptions(kmeansOptions);
+                System.out.println(settings.get("transformer").get("id").toString());
+                switch (settings.get("transformer").get("id").asText()) {
                     case "spark-word2vec":
+                        System.out.println(".....Spark Word2Vec.......");
                         pipelineStages = new PipelineStage[]{
                                 tokenizer,
                                 stopWordsRemover,
@@ -107,6 +116,8 @@ public class SparkPipelineFactory {
                         };
                         break;
                     case "hashing-tf":
+                    default:
+                        System.out.println(".....Spark HashingTF.......");
                         pipelineStages = new PipelineStage[]{
                                 tokenizer,
                                 stopWordsRemover,
@@ -114,18 +125,23 @@ public class SparkPipelineFactory {
                                 kMeans
                         };
                         break;
-                    default:
-                        pipelineStages = new PipelineStage[]{
-                                tokenizer,
-                                stopWordsRemover,
-                                hashingTF,
-                                kMeans
-                        };
                 }
                 break;
             case "spark-bi-kmeans":
-                switch(settings.get("transformer").get("id").toString()){
+                System.out.println(".....Spark Bisecting KMeans.......");
+                switch (settings.get("transformer").get("id").asText()) {
+                    case "hashing-tf":
+                        System.out.println(".....Spark HashingTF.......");
+                        pipelineStages = new PipelineStage[]{
+                                tokenizer,
+                                stopWordsRemover,
+                                hashingTF,
+                                bisectingKMeans
+                        };
+                        break;
                     case "spark-word2vec":
+                    default:
+                        System.out.println(".....Spark Word2Vec.......");
                         pipelineStages = new PipelineStage[]{
                                 tokenizer,
                                 stopWordsRemover,
@@ -133,32 +149,11 @@ public class SparkPipelineFactory {
                                 bisectingKMeans
                         };
                         break;
-                    case "hashing-tf":
-                        pipelineStages = new PipelineStage[]{
-                                tokenizer,
-                                stopWordsRemover,
-                                hashingTF,
-                                bisectingKMeans
-                        };
-                        break;
-                    case "":
-                        pipelineStages = new PipelineStage[]{
-                                tokenizer,
-                                stopWordsRemover,
-                                hashingTF,
-                                bisectingKMeans
-                        };
-                        break;
-                    default:
-                        pipelineStages = new PipelineStage[]{
-                                tokenizer,
-                                stopWordsRemover,
-                                hashingTF,
-                                bisectingKMeans
-                        };
                 }
                 break;
             default:
+                setKMeansOptions((ArrayNode) algorithm.get("options"));
+                System.out.println(".....Spark Default: KMeans-Word2Vec.......");
                 pipelineStages = new PipelineStage[]{
                         tokenizer,
                         stopWordsRemover,
@@ -169,13 +164,13 @@ public class SparkPipelineFactory {
         pipeline = new Pipeline().setStages(pipelineStages);
     }
 
-    private void runCommonPreprocessor(){
+    private void runCommonPreprocessor() {
         dataSet = commonPreprocess(dataSet, dataSet.columns());
         dataSet = addIDColumn(dataSet);
     }
 
-    private void savePipelineModel(){
-        String path = "myresources/models/"+pipelineName;
+    private void savePipelineModel() {
+        String path = "myresources/models/" + pipelineName;
         System.out.print(path);
         try {
             pipelineModel.write().overwrite().save(path);
@@ -184,21 +179,34 @@ public class SparkPipelineFactory {
         }
     }
 
-    private void saveResults(Dataset<Row> results){
+    private void saveResults(Dataset<Row> results) {
         results.write().format("json").mode("overwrite").save("myresources/results/" + pipelineName);
         results.write().mode(SaveMode.Overwrite).saveAsTable(pipelineName);
     }
 
-    public Dataset<Row> trainPipeline(String pipelineName, String path, String type){
+    public Dataset<Row> trainPipeline(String pipelineName, String path, String type) {
         setPipelineName(pipelineName);
         loadData(type, path);
         runCommonPreprocessor();
-        pipelineModel = pipeline.fit(dataSet);
+        pipelineModel = pipeline.fit(this.dataSet);
         savePipelineModel();
-        Dataset<Row> results = pipelineModel.transform(dataSet);
+        Dataset<Row> results = pipelineModel.transform(this.dataSet);
         saveResults(results);
         return results;
     }
 
+    private void setKMeansOptions(ArrayNode options) {
+        for (JsonNode option : options) {
+            System.out.println(option);
+            String name = option.get("name").asText();
+            String value = option.get("value").asText();
+            System.out.println(name);
+            System.out.println(value);
+            if (name.equals("K-value"))
+                kMeans.setK(option.get("value").asInt());
+            if (name.equals("iterations"))
+                kMeans.setMaxIter(parseInt(value));
+        }
+    }
 
 }
