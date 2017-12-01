@@ -18,10 +18,9 @@ yajsw
 /Workbench4LSDD-Service.iml
 myresources/models/
 myresources/results/
-public/results/processedResults/1507882616674/_temporary/
-public/results/processedResults/1507882905503/_temporary/
-public/results/processedResults/1507885846082/_temporary/
-public/results/processedResults/1507928735440/_temporary/
+public/results/
 out/production/Workbench4LSDD-Service/
 myresources/models
 myresources/results
+myresources/datasets
+spark-warehouse
