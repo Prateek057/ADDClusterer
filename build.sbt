@@ -30,7 +30,7 @@ libraryDependencies ++= Seq(
   "org.webjars.bower" % "angular-route" % "1.6.1",
   "org.webjars.bower" % "angular-material" % "1.1.4",
   "org.webjars" % "d3js" % "3.5.17",
-"nz.ac.waikato.cms.weka" % "weka-stable" % "3.8.1",
+  "nz.ac.waikato.cms.weka" % "weka-stable" % "3.8.1",
   "nz.ac.waikato.cms.weka" % "LibSVM" % "1.0.10",
   "org.codehaus.janino" % "janino" % "3.0.7",
   "org.deeplearning4j" % "deeplearning4j-core" % "0.9.1",
@@ -50,7 +50,8 @@ resolvers += "rapidminer-studio-core" at "https://maven.rapidminer.com/content/g
 
 dependencyOverrides ++= Set(
   "com.fasterxml.jackson.core" % "jackson-core" % "2.6.5",
-  "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.5"
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.5",
+  "nz.ac.waikato.cms.weka" % "weka-dev" % "3.9.1"
 )
 
 unmanagedResourceDirectories in (Compile, runMain) <+=  baseDirectory ( _ /"../myresources")
