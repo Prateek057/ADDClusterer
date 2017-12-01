@@ -19,6 +19,7 @@ import spark.clusterers.BaseClusterPipeline;
 import spark.dataloaders.CSVDataLoader;
 import spark.examples.ExamplePredictPipeline1;
 import spark.pipelines.SparkPipelineFactory;
+import spark.pipelines.SparkPredictPipeline;
 import util.StaticFunctions;
 
 import javax.inject.Inject;
@@ -155,8 +156,26 @@ public class ClusterController extends Controller {
         JsonNode pipeline = request().body().asJson().get("pipeline");
         String textToCluster = request().body().asJson().get("textToClassify").asText();
         String pipelineName = pipeline.get("name").asText();
-        Dataset<Row> result = ExamplePredictPipeline1.predictLables(pipelineName, textToCluster);
-        return ok(Json.toJson(datasetToJson(result)));
+        JsonNode results = Json.toJson(Json.parse("{}"));
+        switch(pipeline.get("library").asInt()){
+            case 2:{
+                Logger.info("....Building in Progress.....");
+                //Do Nothing : In Progress
+                ((ObjectNode) results).set("results", Json.toJson("In Progress"));
+            }
+            break;
+            case 1:
+                Logger.info(".....Prediction Library: Spark..................");
+                SparkPredictPipeline predictPipeline = new SparkPredictPipeline(pipelineName);
+                Dataset<Row> result = predictPipeline.predict(textToCluster);
+                results = Json.toJson(datasetToJson(result));
+                break;
+            default:
+                ((ObjectNode) results).set("results", Json.toJson("Not Found"));
+                Logger.info(".....Prediction Library: Not Found..................");
+        }
+        return ok(results);
     }
 
 }
+
