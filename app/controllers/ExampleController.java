@@ -13,8 +13,8 @@ import weka.core.json.JSONNode;
 import weka.examples.ExampleWekaClusterer1;
 
 import static controllers.ClusterController.getSortedClusterResults;
-import static dl4j.ExampleDL4JKmeans.clusterDocuments;
-import static rm.CSVDataLoader.rmCSVLoader;
+//import static dl4j.ExampleDL4JKmeans.clusterDocuments;
+//import static rm.CSVDataLoader.rmCSVLoader;
 import static spark.examples.ExamplePredictPipeline1.predictLables;
 import static spark.utils.SparkDatasetUtil.extractClusterTablefromDataset;
 
@@ -35,24 +35,6 @@ public class ExampleController extends Controller{
         Dataset<Row> results = exampleKMeansPipeline2.trainPipeline();
         JsonNode jsonResults = getSortedClusterResults(extractClusterTablefromDataset(results));
         return ok(jsonResults);
-    }
-
-    //Run DL4J Pipeline1: Experimental
-    @Experimental
-    public Result runDL4JPipelineExample() {
-        clusterDocuments();
-        return ok();
-    }
-
-    //Run RM Pipeline1: Experimental
-    @Experimental
-    public Result runRm() {
-        try {
-            rmCSVLoader();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return ok();
     }
 
     //Spark Predict Pipeline Example

@@ -37,8 +37,6 @@ POST        /clustering/pipeline/predict        controllers.ClusterController.ge
 GET         /spark/kmeans/example1              controllers.ExampleController.runPipelineExample1
 GET         /spark/kmeans/example2              controllers.ExampleController.runPipelineExample2
 GET         /spark/predict/:modelName           controllers.ExampleController.runPredictPipelineExample1(modelName: String)
-GET         /dl4j/kmeans/example1               controllers.ExampleController.runDL4JPipelineExample
-GET         /rm                                 controllers.ExampleController.runRm
 GET         /weka/dl/example1                   controllers.ExampleController.runDataSourceExample
 
 
