@@ -13,7 +13,7 @@ Morphia - `1.2.1`
 Angular - `1.5.8`  
 Bootstrap - `3.3.6`  
 
-######Experimental
+###### Experimental
 > 1. DL4J Version: `0.9.1`        
 > 2. RapidMiner: Snapshot version to be build locally
 
@@ -22,19 +22,19 @@ Ensure mongodb is running on default port `27017`; else configure settings in Gl
 From the command prompt execute  
 > sbt run  
 
-###Running Applications
+### Running Applications
 >1. Frontend Application will be available at `localhost:9000`
 >2. Spark Web UI is available at `localhost:9090` 
 
-####Example Training Pipelines          
-#####Spark KMeans        
+#### Example Training Pipelines          
+##### Spark KMeans        
 >Word2Vec: `localhost:9000/spark/kmeans/example1`          
 >HashingTF: `localhost:9000/spark/kmeans/example2`
            
-####DL4J KMeans       
+#### DL4J KMeans       
 >Word2Vec: `localhost:9000/dl4j/kmeans/example1`
         
-###Results
+### Results
 Results are stored in "myresources" directory. two type of results are generated currently
 >1. Labeled Data in json format, Stored in /myresources/results/<pipeline-name>
 >2. Fitted Model from the pipeline, Stored in /myresources/models/<pipeline-name>
