@@ -33,10 +33,10 @@ libraryDependencies ++= Seq(
   "nz.ac.waikato.cms.weka" % "weka-stable" % "3.8.1",
   "nz.ac.waikato.cms.weka" % "LibSVM" % "1.0.10",
   "org.codehaus.janino" % "janino" % "3.0.7",
-  "org.deeplearning4j" % "deeplearning4j-core" % "0.9.1",
+/*  "org.deeplearning4j" % "deeplearning4j-core" % "0.9.1",
   "org.deeplearning4j" % "deeplearning4j-nlp" % "0.9.1",
   "org.nd4j" % "nd4j-backends" % "0.9.1",
-  "com.rapidminer.studio" % "rapidminer-studio-core" % "7.3.0",
+  "com.rapidminer.studio" % "rapidminer-studio-core" % "7.3.0",*/
   "org.apache.spark" %% "spark-core" % "2.2.0",
   "org.apache.spark" %% "spark-sql" % "2.2.0",
   "org.apache.spark" %% "spark-streaming" % "2.2.0",
@@ -44,9 +44,9 @@ libraryDependencies ++= Seq(
   "org.apache.hadoop" % "hadoop-client" % "2.7.2"
 )
 
-libraryDependencies += "org.nd4j" % "nd4j-native-platform" % "0.9.1" classifier "windows-x86_64"
+/*libraryDependencies += "org.nd4j" % "nd4j-native-platform" % "0.9.1" classifier "windows-x86_64"*/
 
-resolvers += "rapidminer-studio-core" at "https://maven.rapidminer.com/content/groups/public/"
+/*resolvers += "rapidminer-studio-core" at "https://maven.rapidminer.com/content/groups/public/"*/
 
 dependencyOverrides ++= Set(
   "com.fasterxml.jackson.core" % "jackson-core" % "2.6.5",
