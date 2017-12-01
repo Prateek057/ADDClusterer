@@ -1,5 +1,6 @@
 package model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.MorphiaObject;
@@ -10,6 +11,7 @@ import java.util.List;
 /**
  * Created by Manoj on 10/26/2016.
  */
+
 public class PersistentEntity {
 
     public void save() {

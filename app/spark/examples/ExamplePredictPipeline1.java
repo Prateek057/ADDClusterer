@@ -1,46 +1,40 @@
 package spark.examples;
 
 import org.apache.spark.ml.PipelineModel;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.functions;
+import org.apache.spark.sql.*;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 import spark.SparkSessionComponent;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 public class ExamplePredictPipeline1 {
 
     private static SparkSessionComponent sparkSessionComponent;
 
-    public static Dataset<Row> predictLables(String modelName){
-        System.out.println("\n...........................Example PipeLine 1: Tokenizer, Remove StopWords, Word2Vec, KMeans...........................");
-
+    public static Dataset<Row> predictLables(String pipelineName, String textToCluster){
         sparkSessionComponent = SparkSessionComponent.getSparkSessionComponent();
 
         SparkSession spark = sparkSessionComponent.getSparkSession();
         System.out.print("\n");
 
+        // Prepare test documents.
+        List<Row> dataText = Arrays.asList(
+                RowFactory.create(textToCluster)
+        );
 
-        // Load and parse data
-        String path = new File("../DocClassification/myresources/datasets/tasksNoHeader.csv").getAbsolutePath();
-        Dataset<Row> inputData = spark.read().csv(path);
+        StructType schema = new StructType(new StructField[]{
+                new StructField("document", DataTypes.StringType, false, Metadata.empty())
+        });
 
-        //Display Loaded Dataset
-        inputData.show();
+        Dataset<Row> textData = spark.createDataFrame(dataText, schema);
 
-        //Concat the String columns
-        inputData = inputData.withColumn("document", functions.concat_ws(" ", inputData.col("_c0"), inputData.col("_c1")));
-
-        //Split into training & testing datasets
-        double[] weights = {0.7, 0.3};
-        Dataset<Row>[] splitDataSet = inputData.randomSplit(weights);
-        Dataset<Row> testingData = splitDataSet[0];
-
-        PipelineModel savedModel = PipelineModel.load("myresources/models/" + modelName);
-        return savedModel.transform(testingData);
-
-
+        PipelineModel savedModel = PipelineModel.load("myresources/models/" + pipelineName);
+        return savedModel.transform(textData);
     }
 
 

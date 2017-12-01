@@ -1,11 +1,11 @@
 package model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Entity("cluster-pipelines")
 public class ClusterPipeline  extends PersistentEntity{

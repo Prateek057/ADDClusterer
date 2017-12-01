@@ -14,6 +14,12 @@ clusterPipelineApp.factory('ClusterPipelineDataService', ['$http', function Pipe
                 return response.data;
             });
     };
+    var getPipeline = function (pipelineName) {
+        return $http.get('/clustering/pipeline/' + pipelineName)
+            .then(function (response) {
+                return response.data;
+            });
+    };
     var getPipelineClusters = function (name) {
         return $http.get('/pipeline/clusters/' + name)
             .then(function (response) {
@@ -30,6 +36,7 @@ clusterPipelineApp.factory('ClusterPipelineDataService', ['$http', function Pipe
         getPipelineResults: getPipelineResults,
         getPipelineClusters: getPipelineClusters,
         getPipelineModels: getPipelineModels,
+        getPipeline: getPipeline,
         getAllPipelines: getAllPipelines
     };
 }]);
@@ -52,6 +59,16 @@ clusterPipelineApp.config(['$routeProvider', function ($routeProvider) {
             resolve: {
                 pipelines: function (ClusterPipelineDataService) {
                     return ClusterPipelineDataService.getAllPipelines();
+                }
+            }
+        })
+        .when('/clustering/executePipeline/:pipelineName', {
+            templateUrl: '/assets/components/cluster/executePipeline.html',
+            controller: 'ExecutePipelineCtrl',
+            controllerAs: 'vm3',
+            resolve: {
+                pipeline: function (ClusterPipelineDataService, $route) {
+                    return ClusterPipelineDataService.getPipeline($route.current.params.pipelineName);
                 }
             }
         })
@@ -93,23 +110,30 @@ classifyApp.controller('ClusterClassifyCtrl', ['pipelines', '$http', function (p
 
 classifyApp.controller('ExecutePipelineCtrl', ['scAuth', 'scData', 'scModel', 'pipeline', '$http', '$q', function (scAuth, scData, scModel, pipeline, $http, $q) {
     var self = this;
-    self.pipeline = JSON.parse(pipeline.result);
+    self.pipeline = pipeline;
     self.showResults = false;
     self.textToClassify = "";
     self.isPredicting = false;
 
-    self.classifyDocuments = function () {
+    self.clusterDocument = function () {
+
         if (self.textToClassify === "") {
-            self.message = "Please provide the text to classify!"
+            self.message = "Please provide the text to predict cluster label!"
         } else {
+            $("#progress").css({
+                "visibility": "visible"
+            });
             self.isPredicting = true;
             var data = {};
-            data.pipelineName = self.pipeline.name;
-            data.textToClassify = self.textToClassify;
-            $http.post('/pipeline/predict', data).then(function (response) {
-                self.result = response.data.result;
+            data.pipeline = self.pipeline;
+            data.textToClassify = ""+self.textToClassify;
+            $http.post('/clustering/pipeline/predict', data).then(function (response) {
+                self.result = response.data;
                 self.showResults = true;
                 self.isPredicting = false;
+                $("#progress").css({
+                    "visibility": "hidden"
+                });
             });
         }
     };

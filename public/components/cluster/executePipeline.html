@@ -1,0 +1,33 @@
+<div class="container">
+    <div class="row">
+        <div class="col s12 section">
+            <h1>Predict Cluster Label</h1>
+        </div>
+        <div class="col s12 section">
+            <p><b>Pipeline: {{vm3.pipeline.name}}</b></p>
+            <br>
+        </div>
+        <div class="col s12 section">
+            <div class="row">
+                <div class="form-group">
+                    <textarea class="form-control" rows="5" id="textToClassify"
+                              ng-model="vm3.textToClassify"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div ng-if='vm3.textToClassify !== ""'>
+                    <button type="button" class="btn btn-primary" ng-click="vm3.clusterDocument()">Get Cluster Label
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col s12 section">
+            <div ng-if="vm3.isTraining === true" class="row">
+                Please wait! The system is predicting the label!
+            </div>
+            <div ng-if="vm3.showResults === true" class="row">
+                <b>Predicted label: {{vm3.result[0].cluster_label}}</b>
+            </div>
+        </div>
+    </div>
+</div>

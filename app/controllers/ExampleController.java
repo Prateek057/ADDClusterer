@@ -57,7 +57,7 @@ public class ExampleController extends Controller{
 
     //Spark Predict Pipeline Example
     public Result runPredictPipelineExample1(String modelName) {
-        Dataset<Row> results = predictLables(modelName);
+        Dataset<Row> results = predictLables(modelName, "Spark KMeans Prediction Example");
         JsonNode jsonResults = getSortedClusterResults(extractClusterTablefromDataset(results));
         return ok(jsonResults);
     }

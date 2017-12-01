@@ -1,5 +1,6 @@
 package controllers;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,6 +17,7 @@ import services.HelperService;
 import services.PipelineService;
 import spark.clusterers.BaseClusterPipeline;
 import spark.dataloaders.CSVDataLoader;
+import spark.examples.ExamplePredictPipeline1;
 import spark.pipelines.SparkPipelineFactory;
 import util.StaticFunctions;
 
@@ -30,6 +32,7 @@ import static spark.utils.SparkDatasetUtil.clusterTableToJson;
 import static spark.utils.SparkDatasetUtil.datasetToJson;
 import static spark.utils.SparkDatasetUtil.extractClusterTablefromDataset;
 
+
 public class ClusterController extends Controller {
 
     @Inject
@@ -40,7 +43,6 @@ public class ClusterController extends Controller {
         return clusterTableToJson(sortedResults);
     }
 
-
     public Result runPipeline(String pipelineName) {
         CSVDataLoader csvDataLoader = new CSVDataLoader();
         BaseClusterPipeline baseClusterPipeline = new BaseClusterPipeline(csvDataLoader);
@@ -49,7 +51,10 @@ public class ClusterController extends Controller {
         return ok(jsonResults);
     }
 
-
+    public Result getPipeline(String pipelineName){
+        PersistentEntity pipeline = PipelineService.getClusterPipeline(pipelineName);
+        return ok(Json.parse(StaticFunctions.deserializeToJSON(pipeline)));
+    }
 
     public Result getTrainedPipelines() {
         List<String> results = PipelineService.getAllTrainedModels();
@@ -99,6 +104,7 @@ public class ClusterController extends Controller {
             return ok();
         }
     }
+
     public Result createClusterPipeline(){
         JsonNode data = request().body().asJson().get("pipeline");
         String filepath = data.get("dataset").asText();
@@ -143,6 +149,14 @@ public class ClusterController extends Controller {
         }
         JsonNode json_results = Json.toJson(Json.parse("{}"));
         return ok(((ObjectNode)json_results).set("results", results));
+    }
+
+    public Result getSimilarDocuments(){
+        JsonNode pipeline = request().body().asJson().get("pipeline");
+        String textToCluster = request().body().asJson().get("textToClassify").asText();
+        String pipelineName = pipeline.get("name").asText();
+        Dataset<Row> result = ExamplePredictPipeline1.predictLables(pipelineName, textToCluster);
+        return ok(Json.toJson(datasetToJson(result)));
     }
 
 }

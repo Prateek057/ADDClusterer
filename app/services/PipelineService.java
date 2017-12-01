@@ -81,6 +81,11 @@ public class PipelineService {
         return clusterPipeline.getAll();
     }
 
+    public static PersistentEntity getClusterPipeline(String pipelineName){
+        ClusterPipeline clusterPipeline = new ClusterPipeline();
+        return clusterPipeline.findByName("name", pipelineName);
+    }
+
     private static ArrayList<String> getPreprocessorList(JsonNode preprocessors) {
         ArrayList<String> array = new ArrayList<>();
         for(Iterator<String> fieldNames = preprocessors.fieldNames(); fieldNames.hasNext();){
