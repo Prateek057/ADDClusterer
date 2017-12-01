@@ -27,5 +27,23 @@
                 </tbody>
             </table>
         </div>
+        <div id="empty-table" ng-if="vm.pipelines.length <= 0" class="valign-wrapper layout-padding">
+            <div class="container center-align">
+                <div class="row">
+                    <div class="col s12">
+                        <i class="material-icons" style="color:teal;font-size:10rem;display:block;">mood_bad</i>
+                    </div>
+                    <div class="col s12">
+                        <h4>Ooops! Looks like you did not create any pipelines</h4>
+                    </div>
+                    <div class="col s12"><p></p></div>
+                    <div class="col s12">
+                        <a class="btn btn pirmary" href="/cluster/pipelines">
+                            Create One
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

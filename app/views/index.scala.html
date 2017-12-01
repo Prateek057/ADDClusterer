@@ -18,7 +18,7 @@
     </head>
     <body>
         <div class="navbar-fixed">
-            <nav class="navbar-fixed light-blue darken-4" role="navigation">
+            <nav class="light-blue darken-4" role="navigation">
                 <div class="container nav-wrapper">
                     <a href="/" class="brand-logo">Workbench4DC</a>
                     <ul id="nav-mobile" class="right hide-on-med-and-down">
@@ -30,14 +30,9 @@
                 <div id="progress" class="progress light-blue darken-4">
                     <div class="indeterminate"></div>
                 </div>
-            </nav>
-        </div>
-        <div class="">
-            <div class="row ">
-                <div>
-                    <div ng-view></div>
-                </div>
-            </div>
+            </nav></div>
+        <div class="row">
+            <div ng-view></div>
         </div>
         <script src="@routes.WebJarAssets.at(webJarAssets.locate("jquery.min.js"))"></script>
         @*<script src="@routes.WebJarAssets.at(webJarAssets.locate("js/bootstrap.min.js"))"></script>*@

@@ -34,18 +34,24 @@ public class PipelineService {
 
     public static void saveClusterPipelineSettings(JsonNode settings){
         JsonNode algorithm_settings = settings.get("algorithm");
-        List<Option> options = new ArrayList<>();
-        ArrayNode options_settings = (ArrayNode) algorithm_settings.get("options");
-        for(JsonNode option: options_settings){
-            Option optionObject = new Option();
-            optionObject.setName(option.get("name").asText());
-            optionObject.setValue(option.get("value").asInt());
-            options.add(optionObject);
-        }
+
         Algorithm algorithm = new Algorithm();
         algorithm.setId(algorithm_settings.get("id").asText());
         algorithm.setName(algorithm_settings.get("name").asText());
-        algorithm.setOptions(options);
+
+        if(algorithm_settings.has("options")){
+            List<Option> options = new ArrayList<>();
+            ArrayNode options_settings = (ArrayNode) algorithm_settings.get("options");
+            for(JsonNode option: options_settings){
+                Option optionObject = new Option();
+                optionObject.setName(option.get("name").asText());
+                optionObject.setValue(option.get("value").asInt());
+                options.add(optionObject);
+            }
+            algorithm.setOptions(options);
+        }
+
+
         ClusterPipeline clusterPipeline = new ClusterPipeline(
                 settings.get("href").asText(),
                 settings.get("name").asText(),

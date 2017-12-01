@@ -181,7 +181,8 @@ public class SparkPipelineFactory {
 
     private void saveResults(Dataset<Row> results) {
         results.write().format("json").mode("overwrite").save("myresources/results/" + pipelineName);
-        results.write().mode(SaveMode.Overwrite).saveAsTable(pipelineName);
+        //uncomment below line to save to Spark Warehouse
+        //results.write().mode(SaveMode.Overwrite).saveAsTable(pipelineName);
     }
 
     public Dataset<Row> trainPipeline(String pipelineName, String path, String type) {
