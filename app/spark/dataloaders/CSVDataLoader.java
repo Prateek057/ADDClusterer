@@ -17,7 +17,7 @@ public class CSVDataLoader implements ISparkDataLoader {
     public Dataset<Row> loadData(String path) {
         SparkSession spark = sparkSessionComponent.getSparkSession();
         System.out.println(path);
-        File csvFile = new File(path);
-        return spark.read().csv(path);
+        String csvFile = new File(path).getAbsolutePath();
+        return spark.read().csv(csvFile);
     }
 }
