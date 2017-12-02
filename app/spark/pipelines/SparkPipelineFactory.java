@@ -25,6 +25,7 @@ public class SparkPipelineFactory {
 
 
     private String pipelineName;
+    private JsonNode settings;
     private DataLoaderFactory dataLoaderFactory;
     private Tokenizer tokenizer;
     private StopWordsRemover stopWordsRemover;
@@ -51,8 +52,8 @@ public class SparkPipelineFactory {
 
     public SparkPipelineFactory(JsonNode settings) {
         dataLoaderFactory = new DataLoaderFactory();
+        this.settings = settings;
         initPipelineStages();
-        saveClusterPipelineSettings(settings);
         setPipelineStages(settings);
         pipeline = new Pipeline().setStages(pipelineStages);
     }
@@ -193,6 +194,7 @@ public class SparkPipelineFactory {
         savePipelineModel();
         Dataset<Row> results = pipelineModel.transform(this.dataSet);
         saveResults(results);
+        saveClusterPipelineSettings(settings);
         return results;
     }
 
