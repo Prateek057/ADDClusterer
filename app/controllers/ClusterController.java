@@ -26,6 +26,8 @@ import javax.inject.Inject;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import static java.lang.Integer.parseInt;
 import static spark.utils.FileUtil.jsonToCSVConverter;
 import static spark.utils.FileUtil.saveDataAsCSV;
@@ -167,8 +169,8 @@ public class ClusterController extends Controller {
             case 1:
                 Logger.info(".....Prediction Library: Spark..................");
                 SparkPredictPipeline predictPipeline = new SparkPredictPipeline(pipelineName);
-                Dataset<Row> result = predictPipeline.predict(textToCluster);
-                results = Json.toJson(datasetToJson(result));
+                ArrayNode result = predictPipeline.predict(textToCluster);
+                results = Json.toJson(result);
                 break;
             default:
                 ((ObjectNode) results).set("results", Json.toJson("Not Found"));

@@ -8,5 +8,5 @@ public interface IPredictPipeline {
     /*readModel();
     tranfromText();
     getClusterByLabel();
-    applyRanking();*/
+    createWork2VecModel();*/
 }

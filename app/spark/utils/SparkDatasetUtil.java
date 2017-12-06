@@ -22,6 +22,13 @@ public class SparkDatasetUtil {
         return Json.toJson(array);
     }
 
+    public static ArrayNode datasetToJsonArray(Dataset<Row> dataset) {
+        ArrayNode array = new ArrayNode(new JsonNodeFactory(true));
+        List<String> datasetJson = dataset.toJSON().collectAsList();
+        datasetJson.forEach((row) -> array.add(Json.toJson(Json.parse(row))));
+        return array;
+    }
+
     public static JsonNode clusterTableToJson(Dataset<Row> dataSet) {
         String dataset_count = dataSet.agg(functions.sum("count")).first().get(0).toString();
         ArrayNode clusterArrayNode = new ArrayNode(new JsonNodeFactory(true));

@@ -52,7 +52,8 @@ libraryDependencies ++= Seq(
 dependencyOverrides ++= Set(
   "com.fasterxml.jackson.core" % "jackson-core" % "2.6.5",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.5",
-  "nz.ac.waikato.cms.weka" % "weka-dev" % "3.9.1"
+  "nz.ac.waikato.cms.weka" % "weka-dev" % "3.9.1",
+  "org.webjars" % "jquery" % "3.2.1"
 )
 
 unmanagedResourceDirectories in (Compile, runMain) <+=  baseDirectory ( _ /"../myresources")

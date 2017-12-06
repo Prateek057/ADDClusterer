@@ -262,7 +262,6 @@ pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
                 transformer: self.transformer
             }
         };
-        console.log(data);
         $http.post("/clustering/pipeline/create", data)
             .then(function (response) {
                 Materialize.toast('Pipeline Create!', 4000);
@@ -274,7 +273,6 @@ pipelineApp.controller('ClusterPipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
                     $location.path("/clustering/clusters/" + pipelineName);
                 }
             });
-
     };
 }]);
 

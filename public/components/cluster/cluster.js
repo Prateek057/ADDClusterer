@@ -114,6 +114,9 @@ classifyApp.controller('ExecutePipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
     self.showResults = false;
     self.textToClassify = "";
     self.isPredicting = false;
+    self.sortType     = 'DOC_ID'; // set the default sort type
+    self.sortReverse  = false;  // set the default sort order
+    self.searchDocument   = '';     // set the default search/filter term
 
     self.clusterDocument = function () {
 
@@ -128,7 +131,7 @@ classifyApp.controller('ExecutePipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
             data.pipeline = self.pipeline;
             data.textToClassify = ""+self.textToClassify;
             $http.post('/clustering/pipeline/predict', data).then(function (response) {
-                self.result = response.data;
+                self.documents = response.data;
                 self.showResults = true;
                 self.isPredicting = false;
                 $("#progress").css({
