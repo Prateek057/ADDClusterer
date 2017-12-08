@@ -93,4 +93,12 @@ public class StaticFunctions {
         }
         return text.replaceAll("[()]", "method");
     }
+
+    //Method for sorting the TreeMap based on values
+    public static <K, V extends Comparable<V>> TreeMap<K, V> sortByValues(final Map<K, V> map) {
+        TreeMap<K, V> sortedByValues = new TreeMap<K, V>(Collections.reverseOrder());
+                //new TreeMap<K, V>(valueComparator);
+        sortedByValues.putAll(map);
+        return sortedByValues;
+    }
 }

@@ -44,6 +44,7 @@ classifyApp.controller('ExecutePipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
             self.message = "Please provide the text to classify!"
         } else {
             self.isPredicting = true;
+            self.showResults = false;
             var data = {};
             data.pipelineName = self.pipeline.name;
             data.textToClassify = self.textToClassify;

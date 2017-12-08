@@ -4,6 +4,7 @@ import org.apache.spark.ml.linalg.Vector;
 
 public class CosineSimilarity implements IRankingStrategy{
 
+    @Override
     public Double getSimilarity(Vector v1, Vector v2){
         if(v1.size() == v2.size()){
             return dot(v1, v2) / (magnitude(v1) * magnitude(v2));

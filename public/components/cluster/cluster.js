@@ -114,9 +114,6 @@ classifyApp.controller('ExecutePipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
     self.showResults = false;
     self.textToClassify = "";
     self.isPredicting = false;
-    self.sortType     = 'DOC_ID'; // set the default sort type
-    self.sortReverse  = false;  // set the default sort order
-    self.searchDocument   = '';     // set the default search/filter term
 
     self.clusterDocument = function () {
 
@@ -128,14 +125,18 @@ classifyApp.controller('ExecutePipelineCtrl', ['scAuth', 'scData', 'scModel', 'p
             });
             self.isPredicting = true;
             var data = {};
+            self.showResults = false;
             data.pipeline = self.pipeline;
             data.textToClassify = ""+self.textToClassify;
             $http.post('/clustering/pipeline/predict', data).then(function (response) {
-                self.documents = response.data;
+                self.documents = response.data.sort(function(a,b){
+                  return b.similarity - a.similarity;
+                });
                 self.showResults = true;
                 self.isPredicting = false;
                 $("#progress").css({
                     "visibility": "hidden"
+
                 });
             });
         }

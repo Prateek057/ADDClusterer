@@ -1,6 +1,5 @@
 package spark.pipelines;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -23,14 +22,13 @@ import services.PipelineService;
 import spark.SparkSessionComponent;
 import spark.ranking.IRankingStrategy;
 import spark.ranking.RankingStrategy;
+import util.StaticFunctions;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Integer.parseInt;
-import static spark.utils.SparkDatasetUtil.datasetToJson;
-import static spark.utils.SparkDatasetUtil.datasetToJsonArray;
 
 public class SparkPredictPipeline implements IPredictPipeline {
 
@@ -39,7 +37,6 @@ public class SparkPredictPipeline implements IPredictPipeline {
     private PipelineModel predictModel;
     private String pipelineName;
     private String textToClassify;
-    private Dataset<Row> inputDocuments;
     private Integer predictedLabel;
     private StructType schema;
     private SparkSessionComponent sparkSessionComponent;
@@ -60,7 +57,6 @@ public class SparkPredictPipeline implements IPredictPipeline {
         tokenizer = new Tokenizer()
                 .setInputCol("document")
                 .setOutputCol("words");
-
 
         stopWordsRemover = new StopWordsRemover()
                 .setInputCol(tokenizer.getOutputCol())
@@ -99,13 +95,12 @@ public class SparkPredictPipeline implements IPredictPipeline {
         this.predictModel = PipelineModel.load(modelPath);
     }
 
-    private Dataset<Row> transfromText(String textToCluster) {
+    private void transfromText(String textToCluster) {
         List<Row> textInput = Arrays.asList(
                 RowFactory.create(textToCluster)
         );
-        inputDocuments = spark.createDataFrame(textInput, this.schema);
+        Dataset<Row> inputDocuments = spark.createDataFrame(textInput, this.schema);
         results = predictModel.transform(inputDocuments);
-        return results;
     }
 
     private void getClusterByLabel() {
@@ -123,27 +118,28 @@ public class SparkPredictPipeline implements IPredictPipeline {
         Dataset<Row> clusterDocuments = model.transform(clusters);
         Dataset<Row> queryDocuments = model.transform(results);
         Map<Long, Double> similarityMap = getSimilarityMap(clusterDocuments, queryDocuments);
-        SortedMap<Long, Double> sortedMap = sortByValues(similarityMap);
-        Long lastKey = sortedMap.keySet().size() < 20?sortedMap.lastKey():((Long) sortedMap.keySet().toArray()[20]);
-        SortedMap<Long, Double> top20 = sortedMap.subMap(sortedMap.firstKey(), lastKey);
-        Set<Long> top20Keys = top20.keySet();
+        TreeMap<Long, Double> sortedMap = StaticFunctions.sortByValues(similarityMap);
+        return getJsonFromSimilarityMap(sortedMap);
+    }
+
+    private ArrayNode getJsonFromSimilarityMap(TreeMap<Long, Double> sortedMap) {
         ArrayNode array = new ArrayNode(new JsonNodeFactory(true));
-        for(Long key: top20Keys){
-            ObjectNode topDoc = (ObjectNode) Json.parse(clusters.filter("DOC_ID=" + key).limit(1).toJSON().collectAsList().get(0));
-            Double topSimilarity = similarityMap.get(key);
-            if(topSimilarity != null){
-                Float similarity = topSimilarity.floatValue() * 100;//dtring.format("1.4%f",topSimilarity.floatValue()*100);
-                topDoc.set("similarity", Json.toJson(similarity));
-                array.add(topDoc);
+        sortedMap.forEach((doc_id,doc_similarity)->{
+            ObjectNode topDoc = (ObjectNode) Json.parse(clusters.filter("DOC_ID=" + doc_id).limit(1).toJSON().collectAsList().get(0));
+            if(doc_similarity != null){
+                Float similarity = (doc_similarity.floatValue() * 100);
+                if(similarity > 0.0){
+                    topDoc.set("similarity", Json.toJson(String.format("%.2f", similarity)));
+                    array.add(topDoc);
+                }
             }
-        }
+        });
         return array;
     }
 
     private Map<Long, Double> getSimilarityMap(Dataset<Row> clusterDocuments, Dataset<Row> queryDocuments) {
         Map<Long, Double> similarityMap = new HashMap<>();
         for (Row row : queryDocuments.collectAsList()) {
-            List<String> text = row.getList(row.fieldIndex("filtered"));
             Vector queryVector = (Vector) row.get(row.fieldIndex("vectors"));
             for (Row document : clusterDocuments.collectAsList()) {
                 Long documentId = document.getLong(document.fieldIndex("DOC_ID"));
@@ -155,23 +151,4 @@ public class SparkPredictPipeline implements IPredictPipeline {
         return similarityMap;
     }
 
-    //Method for sorting the TreeMap based on values
-    private static <K, V extends Comparable<V>> SortedMap<K, V> sortByValues(final Map<K, V> map) {
-        Comparator<K> valueComparator =
-                new Comparator<K>() {
-                    public int compare(K k1, K k2) {
-                        int compare =
-                                map.get(k1).compareTo(map.get(k2));
-                        if (compare == 0)
-                            return 1;
-                        else
-                            return compare;
-                    }
-                };
-
-        SortedMap<K, V> sortedByValues =
-                new TreeMap<K, V>(valueComparator);
-        sortedByValues.putAll(map);
-        return sortedByValues;
-    }
 }

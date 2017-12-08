@@ -1,6 +1,6 @@
 package spark.ranking;
-
 import org.apache.spark.ml.linalg.Vector;
+
 
 public interface IRankingStrategy {
     //applyRanking()
